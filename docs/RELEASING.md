@@ -38,3 +38,21 @@ a secret of this repository; rather than copying it to a second repository,
 To publish a CausalForcing release: make sure its release tag and CI are in
 place, then run *Actions -> Publish ComfyUI-CausalForcing to Comfy Registry ->
 Run workflow* on `main` with the tag's commit SHA and the version.
+
+## `publish-leaptalk.yml` (ComfyUI-LeapTalk)
+
+[ComfyUI-LeapTalk](https://github.com/hiroki-abe-58/ComfyUI-LeapTalk) is published from here the same
+way: dispatch only, from `main`; target repository (`hiroki-abe-58/ComfyUI-LeapTalk`) and node id
+(`leaptalk`) fixed; inputs are a full commit SHA and a version; the first job (no token) checks
+visibility, `main`, tag, release, CI, that the version is new, `pyproject.toml` and the packed archive.
+
+Difference from the CausalForcing workflow: the publish job does not use
+`Comfy-Org/publish-node-action`, because that action installs `comfy-cli` without a version and uses a
+floating `setup-python` tag inside a step that receives the token. It runs the same command
+(`comfy node publish`) with `comfy-cli==1.22.0` (pinned, reviewed) and `setup-python` pinned by commit,
+re-checks the commit, `pyproject.toml` and that the version is new right before publishing, disables
+comfy-cli telemetry, and passes the token only to that last command.
+
+To publish a LeapTalk release: make sure its release tag and CI are in place, then run *Actions ->
+Publish ComfyUI-LeapTalk to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the
+version.

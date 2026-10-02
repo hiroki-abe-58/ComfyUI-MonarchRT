@@ -20,6 +20,13 @@ CausVid の著者・Alibaba (Wan)・Comfy Org とは無関係です。
   管理者設定を選ぶだけ）。`shell=True` なし、環境変数は allowlist、キャンセル・
   タイムアウト時は自分のジョブのプロセスグループだけを停止します。サンドボックスではありません。
 
+- **v0.2.0: persistent worker**：`backend: persistent` で、ComfyUI の別々の
+  queue job 間でモデルと Triton の autotune 結果を保持します（実測: Monarch の
+  2件目以降のジョブは約 10〜12 秒、one-shot は毎回約 195〜216 秒。出力は one-shot と
+  バイト一致）。待機中も GPU 約 18 GB を保持するため、`worker_idle_seconds`
+  （既定 300 秒）経過、Worker ノードの unload、ComfyUI の終了・異常終了で停止します。
+  既定は従来どおり one-shot です。
+
 速度・品質の比較結果、測定範囲、制約は [README.md](README.md) と
 [docs/BENCHMARKS.md](docs/BENCHMARKS.md) を参照してください。16 FPS 達成や
 dense と同等品質を主張するものではありません。

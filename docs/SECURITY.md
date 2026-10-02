@@ -68,6 +68,38 @@ Nothing outside the job's own process tree is signalled. The GPU end-to-end
 test checks that no process of the job is left and that GPU memory returns to
 the idle level after cancel, timeout and error (see docs/TESTING.md).
 
+## Persistent worker (backend `persistent`)
+
+The persistent backend keeps one runtime process alive between queue jobs.
+The same rules apply as for one-shot jobs, plus:
+
+- It is started only from a registered runtime, with the same argv and
+  environment rules. It runs a copy of `runtime/monarchrt_worker.py` and
+  `runtime/monarchrt_job.py` taken into the worker's session folder at
+  start-up, so updating the node never changes the code of a running worker.
+  The worker's identity (runtime settings, code digest, protocol version)
+  is compared before every job; any difference restarts it.
+- Communication uses the inherited stdin/stdout pipes only (JSON lines,
+  at most 64 KiB per request, no network port). The worker writes its
+  replies to a private copy of stdout; everything the upstream code prints
+  goes to the session log, so it cannot be confused with a reply. Every
+  reply names the worker and the request it answers; replies for other
+  requests are ignored.
+- A `generate` request only names a `job.json` that must be inside the job
+  root; the worker validates it like the one-shot runner and checks that its
+  runtime settings equal the worker's. A second request while busy, or a
+  reused request id, is refused.
+- Only one worker runs at a time per ComfyUI process, and jobs are
+  serialised. A job is never re-sent after the worker accepted it.
+- The worker exits on its own when ComfyUI closes the pipe or dies (idle or
+  busy; it then kills its own process group), after `worker_idle_seconds`
+  without a job (default 300), on Unload, or after a CUDA error. ComfyUI also
+  unloads it when it exits normally.
+- Cancel and timeout first ask the worker to stop between generator forwards
+  (it stays loaded). If that is not confirmed within 60 s, the worker is
+  stopped with the same kill helper as one-shot jobs, limited to its own
+  process group, and the next job starts a new worker.
+
 ## Outputs
 
 `result.json` is size-limited, must name this job, and each video path must

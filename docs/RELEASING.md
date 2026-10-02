@@ -1,0 +1,40 @@
+# Releasing (maintainer notes)
+
+## This node (`monarchrt`)
+
+`.github/workflows/publish.yml` publishes to the Comfy Registry when
+`pyproject.toml` changes on `main` (or by hand). It validates and packs the
+node with `comfy-cli`, waits for the regular CI of the same commit, refuses a
+version that already exists, and passes the `REGISTRY_ACCESS_TOKEN` secret
+only to the official publish action. Bump `[project].version` for every
+release; published versions and GitHub release tags are never replaced.
+
+## Why `publish-causalforcing.yml` is in this repository
+
+[ComfyUI-CausalForcing](https://github.com/hiroki-abe-58/ComfyUI-CausalForcing)
+belongs to the same registry publisher. The publisher token is stored only as
+a secret of this repository; rather than copying it to a second repository,
+`publish-causalforcing.yml` publishes that node from here:
+
+- it runs only by hand (`workflow_dispatch`) from this repository's `main`;
+- the target repository (`hiroki-abe-58/ComfyUI-CausalForcing`) and node id
+  (`causalforcing`) are fixed in the workflow; the only inputs are a full
+  commit SHA and a version;
+- the first job, which never sees the token, checks that the target
+  repository is public, that the commit is on its `main` branch, that tag
+  `v<version>` points to exactly that commit and has a GitHub release, that
+  the target's CI succeeded for it, that the version is not in the registry
+  yet, and that `pyproject.toml` names that node, version, publisher and
+  repository; it then runs `comfy node validate` and `comfy node pack` on the
+  target and inspects the archive (no tests, scripts, weights, MonarchRT
+  files, private paths or token-like strings);
+- the second job checks out the same commit again into a fresh runner, runs
+  none of its scripts, and gives the token only to the official
+  `Comfy-Org/publish-node-action` (pinned by commit), which packs and uploads
+  that checkout;
+- both publish workflows share one concurrency group, so two registry uploads
+  never run at the same time.
+
+To publish a CausalForcing release: make sure its release tag and CI are in
+place, then run *Actions -> Publish ComfyUI-CausalForcing to Comfy Registry ->
+Run workflow* on `main` with the tag's commit SHA and the version.

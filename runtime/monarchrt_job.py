@@ -197,6 +197,31 @@ def _peak_rss_bytes() -> int | None:
         return None
 
 
+def apply_env(env: dict) -> None:
+    """Drop anything that looks like a credential, apply the allowlisted runtime settings, force offline mode."""
+    for key in list(os.environ):
+        if SECRET_RE.search(key):
+            del os.environ[key]
+    os.environ.update(env)
+    os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
+    # Everything is loaded from local files; never reach out to the Hugging Face Hub.
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
+
+
+def become_session_leader(pid_file: Path) -> None:
+    """Own process group, so a parent can stop the whole tree; record pid, pgid and start time."""
+    if hasattr(os, "setsid"):
+        try:
+            os.setsid()
+        except OSError:
+            pass
+    me = _proc_stat(os.getpid())
+    record = {"pid": os.getpid(), "pgid": os.getpgid(0) if hasattr(os, "getpgid") else None, "starttime": int(me[19]) if me else None}
+    pid_file.write_text(json.dumps(record), encoding="utf-8")
+
+
 def main(argv: list[str]) -> int:
     global _EVENTS_PATH
     sys.dont_write_bytecode = True  # never leave __pycache__ in the upstream checkout
@@ -215,24 +240,8 @@ def main(argv: list[str]) -> int:
         _log("invalid_job", error=str(exc))
         return 2
 
-    # Environment: drop anything that looks like a credential, then apply the allowlisted runtime settings.
-    for key in list(os.environ):
-        if SECRET_RE.search(key):
-            del os.environ[key]
-    os.environ.update(job.get("env", {}))
-    os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
-    # Everything is loaded from local files; never reach out to the Hugging Face Hub.
-    os.environ["HF_HUB_OFFLINE"] = "1"
-    os.environ["TRANSFORMERS_OFFLINE"] = "1"
-    os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
-    if hasattr(os, "setsid"):
-        try:
-            os.setsid()  # own process group so the parent can stop the whole tree
-        except OSError:
-            pass
-    me = _proc_stat(os.getpid())
-    record = {"pid": os.getpid(), "pgid": os.getpgid(0) if hasattr(os, "getpgid") else None, "starttime": int(me[19]) if me else None}
-    (job_dir / "runner.pid").write_text(json.dumps(record), encoding="utf-8")
+    apply_env(job.get("env", {}))
+    become_session_leader(job_dir / "runner.pid")
     _install_cancel_watch(job_dir, watch_stdin)
     _log("start", job_id=job["job_id"], profile=job["profile"], videos=len(job["videos"]))
 
@@ -245,108 +254,29 @@ def main(argv: list[str]) -> int:
         return 3
 
 
-def _run(job: dict, job_dir: Path) -> int:
-    t_proc = time.time()
-    upstream = Path(job["upstream_dir"]).resolve()
-    models = Path(job["models_dir"]).resolve()
-    ckpt = Path(job["checkpoint"]).resolve()
-    for p, what in (
-        (upstream / "pipeline" / "causal_inference.py", "upstream checkout"),
-        (models / "wan_models" / "Wan2.1-T2V-1.3B" / "config.json", "Wan2.1-T2V-1.3B"),
-        (ckpt, "checkpoint"),
-    ):
-        if not p.is_file():
-            raise FileNotFoundError(f"{what} not found")
-    sys.path.insert(0, str(upstream))
-    os.chdir(models)  # upstream resolves wan_models/... relative to the working directory
+class JobCancelled(RuntimeError):
+    """Raised between generator forwards when the caller asked to stop."""
 
-    import torch
 
-    _orig_load = torch.load
+# Process-wide state of the wrappers installed by Engine (installed once per process, never stacked).
+_COUNTS = {
+    "monarch_kv_calls": 0,  # causal self-attention with KV cache, Monarch branch
+    "monarch_triton_calls": 0,  # ... of which reached the fused Triton kernel (num_iters == 1)
+    "monarch_torch_slow_calls": 0,  # ... of which used the pure-torch iterative path (num_iters > 1)
+    "monarch_no_cache_calls": 0,  # Monarch without KV cache (training path; expected 0)
+    "dense_self_attn_calls": 0,  # causal self-attention with KV cache, dense branch
+    "flex_attn_calls": 0,  # dense without KV cache (training path; expected 0)
+    "cross_attn_calls": 0,  # text cross-attention (always dense flash-attn)
+}
+_AUTOTUNE = {"bench_calls": 0}  # Triton autotuner benchmark runs (one per config per new tuning key)
+_PATCHED = {"done": False}
 
-    def _safe_load(*args, **kwargs):
-        kwargs["weights_only"] = True  # upstream passes weights_only=False for T5; refuse pickled code objects
-        kwargs.setdefault("mmap", True)  # page-cache backed instead of a second full copy in RAM
-        return _orig_load(*args, **kwargs)
 
-    torch.load = _safe_load
-    import av
-    import triton
-    import utils.wan_wrapper as wan_wrapper
-    import wan.modules.causal_model as causal_model
-    import wan.modules.model as wan_model
-    import wan.modules.monarch_attn as monarch_attn
+def profile_config(upstream: Path, profile: str):
+    """Merged upstream config for a profile, with the Monarch settings applied and asserted."""
     from omegaconf import OmegaConf
-    from pipeline import CausalInferencePipeline
 
-    # Upstream builds the UMT5-XXL encoder in fp32 on the CPU (~23 GB) and then loads the bf16 file into it;
-    # the whole pipeline is cast to bf16 right after. Build it on the meta device and adopt the bf16 tensors
-    # instead: the resulting weights are bit-identical, without the 23 GB fp32 intermediate.
-    _orig_umt5 = wan_wrapper.umt5_xxl
-
-    def _umt5_meta(**kwargs):
-        kwargs.update(device="meta", dtype=torch.bfloat16)
-        model = _orig_umt5(**kwargs)
-        model.load_state_dict = lambda sd, strict=True: torch.nn.Module.load_state_dict(model, sd, strict=strict, assign=True)
-        return model
-
-    wan_wrapper.umt5_xxl = _umt5_meta
-
-    versions = {
-        "python": sys.version.split()[0],
-        "torch": torch.__version__,
-        "cuda": torch.version.cuda,
-        "triton": triton.__version__,
-        "device": torch.cuda.get_device_name(0),
-        "capability": ".".join(map(str, torch.cuda.get_device_capability(0))),
-    }
-    try:
-        import flashinfer
-
-        versions["flashinfer"] = getattr(flashinfer, "__version__", "unknown")
-    except Exception as exc:
-        raise RuntimeError(f"flashinfer import failed: {exc}") from exc
-
-    # --- dispatch counters (wrap the names the upstream modules call) ---
-    import wan.modules.attention as wan_attention
-
-    counts = {
-        "monarch_kv_calls": 0,  # causal self-attention with KV cache, Monarch branch
-        "monarch_triton_calls": 0,  # ... of which reached the fused Triton kernel (num_iters == 1)
-        "monarch_torch_slow_calls": 0,  # ... of which used the pure-torch iterative path (num_iters > 1)
-        "monarch_no_cache_calls": 0,  # Monarch without KV cache (training path; expected 0)
-        "dense_self_attn_calls": 0,  # causal self-attention with KV cache, dense branch
-        "flex_attn_calls": 0,  # dense without KV cache (training path; expected 0)
-        "cross_attn_calls": 0,  # text cross-attention (always dense flash-attn)
-    }
-
-    def _wrap(fn, key):
-        def inner(*a, **k):
-            counts[key] += 1
-            return fn(*a, **k)
-
-        return inner
-
-    # causal_model / model bind these names at import time and look them up as module globals on each call
-    causal_model.monarch_attn_with_kv_cache = _wrap(causal_model.monarch_attn_with_kv_cache, "monarch_kv_calls")
-    monarch_attn._attention_with_cache.apply = _wrap(monarch_attn._attention_with_cache.apply, "monarch_triton_calls")
-    monarch_attn.monarch_attn_slow = _wrap(monarch_attn.monarch_attn_slow, "monarch_torch_slow_calls")
-    causal_model.monarch_attn = _wrap(causal_model.monarch_attn, "monarch_no_cache_calls")
-    causal_model.attention = _wrap(causal_model.attention, "dense_self_attn_calls")
-    causal_model.flex_attention = _wrap(causal_model.flex_attention, "flex_attn_calls")
-    wan_model.flash_attention = _wrap(wan_model.flash_attention, "cross_attn_calls")
-    attn_backend = {
-        "flash_attn_2": bool(wan_attention.FLASH_ATTN_2_AVAILABLE),
-        "flash_attn_3": bool(wan_attention.FLASH_ATTN_3_AVAILABLE),
-    }
-    if not attn_backend["flash_attn_2"] and not attn_backend["flash_attn_3"]:
-        raise RuntimeError("flash-attn is required by the upstream cross-attention (wan/modules/attention.py)")
-    import flash_attn
-
-    versions["flash_attn"] = flash_attn.__version__
-
-    # --- config ---
-    cfg_file, overrides = PROFILES[job["profile"]]
+    cfg_file, overrides = PROFILES[profile]
     config = OmegaConf.merge(OmegaConf.load(upstream / "configs" / "default_config.yaml"), OmegaConf.load(upstream / "configs" / cfg_file))
     if overrides is not None:
         for k, v in overrides.items():
@@ -356,124 +286,267 @@ def _run(job: dict, job_dir: Path) -> int:
     for k, v in expected.items():
         if margs.get(k) != v:
             raise RuntimeError(f"monarch_args.{k} = {margs.get(k)!r}, expected {v!r}")
-    effective = {
-        "config_file": cfg_file,
-        "monarch_args": margs,
-        "denoising_step_list": list(config.denoising_step_list),
-        "warp_denoising_step": bool(config.warp_denoising_step),
-        "num_frame_per_block": int(config.num_frame_per_block),
-        "context_noise": int(config.context_noise),
-        "timestep_shift": float(config.model_kwargs.timestep_shift),
-        "offload_text_encoder": bool(job.get("offload_text_encoder", False)),
-    }
+    return config, cfg_file, margs
 
-    # --- model load ---
-    torch.set_grad_enabled(False)
-    device = torch.device("cuda")
-    t0 = time.time()
-    pipeline = CausalInferencePipeline(config, device=device)
-    meta_left = [n for n, p in list(pipeline.named_parameters()) + list(pipeline.named_buffers()) if p.is_meta]
-    if meta_left:
-        raise RuntimeError(f"{len(meta_left)} tensors were never loaded, e.g. {meta_left[:3]}")
-    state = torch.load(str(ckpt), map_location="cpu")
-    if "generator_ema" not in state:
-        raise RuntimeError(f"checkpoint has no 'generator_ema' (keys: {sorted(state)[:6]})")
-    ema = state["generator_ema"]
-    gen_sd = pipeline.generator.state_dict()
-    shape_bad = [k for k, v in ema.items() if k in gen_sd and tuple(gen_sd[k].shape) != tuple(v.shape)]
-    if shape_bad:
-        raise RuntimeError(f"{len(shape_bad)} EMA tensors have mismatched shapes, e.g. {shape_bad[:3]}")
-    probe_key = next(k for k in ema if k.endswith("blocks.0.self_attn.q.weight"))
-    before = gen_sd[probe_key].float().clone()
-    result = pipeline.generator.load_state_dict(ema, strict=True)
-    after = pipeline.generator.state_dict()[probe_key].float()
-    load_report = {
-        "checkpoint_bytes": ckpt.stat().st_size,  # sha256 is checked by the doctor (verify_sha256)
-        "ema_tensors": len(ema),
-        "generator_tensors": len(gen_sd),
-        "missing_keys": list(result.missing_keys),
-        "unexpected_keys": list(result.unexpected_keys),
-        "probe_tensor": probe_key,
-        "probe_changed_from_base": bool(not torch.equal(before, after)),
-        "probe_equals_ema": bool(torch.equal(after, ema[probe_key].float())),
-    }
-    if not (load_report["probe_changed_from_base"] and load_report["probe_equals_ema"]):
-        raise RuntimeError("EMA weights were not applied to the generator")
-    del state, ema
-    pipeline = pipeline.to(dtype=torch.bfloat16)
-    offload = bool(job.get("offload_text_encoder", False))
-    if offload:
-        from utils.memory import DynamicSwapInstaller, gpu
 
-        DynamicSwapInstaller.install_model(pipeline.text_encoder, device=gpu)
-    else:
-        pipeline.text_encoder.to(device=device)
-    pipeline.generator.to(device=device)
-    pipeline.vae.to(device=device)
-    torch.cuda.synchronize()
-    t_load = time.time() - t0
-    _log("loaded", seconds=round(t_load, 2))
+class Engine:
+    """The part of a job that is done once per process: guards, wrappers, pipeline, weights, device placement.
 
-    # --- phase timers around text encoder, generator, VAE decode ---
-    phase = {"text_encode": 0.0, "generator": 0.0, "generator_denoise": 0.0, "generator_context": 0.0, "vae_decode": 0.0}
-    fwd = {"denoise": 0, "context": 0}
+    Videos are generated one at a time with ``generate``; everything that belongs to a single video (seed,
+    initial noise, KV / cross-attention caches, VAE cache, counters, timers) is reset for each call. The
+    attention profile can be switched between videos with ``set_profile``: the upstream model applies
+    ``monarch_args`` through a property that only sets per-block attributes, and the two upstream configs
+    differ in nothing else.
+    """
 
-    current = {"video": 0}
+    def __init__(self, upstream: Path, models: Path, ckpt: Path, profile: str, offload: bool, on_progress=None):
+        self.upstream, self.models, self.ckpt = upstream, models, ckpt
+        for p, what in (
+            (upstream / "pipeline" / "causal_inference.py", "upstream checkout"),
+            (models / "wan_models" / "Wan2.1-T2V-1.3B" / "config.json", "Wan2.1-T2V-1.3B"),
+            (ckpt, "checkpoint"),
+        ):
+            if not p.is_file():
+                raise FileNotFoundError(f"{what} not found")
+        if str(upstream) not in sys.path:
+            sys.path.insert(0, str(upstream))
+        os.chdir(models)  # upstream resolves wan_models/... relative to the working directory
+        self.on_progress = on_progress
+        self.should_cancel = None
+        self._install_patches()
 
-    def _timed(fn, key, counter=None):
+        import torch
+        from pipeline import CausalInferencePipeline
+
+        self.torch = torch
+        config, cfg_file, margs = profile_config(upstream, profile)
+        self.config = config
+        self.profile = profile
+        self.offload = bool(offload)
+        self.effective = self._effective(config, cfg_file, margs)
+
+        # --- model load ---
+        torch.set_grad_enabled(False)
+        device = torch.device("cuda")
+        self.device = device
+        t0 = time.time()
+        pipeline = CausalInferencePipeline(config, device=device)
+        meta_left = [n for n, p in list(pipeline.named_parameters()) + list(pipeline.named_buffers()) if p.is_meta]
+        if meta_left:
+            raise RuntimeError(f"{len(meta_left)} tensors were never loaded, e.g. {meta_left[:3]}")
+        state = torch.load(str(ckpt), map_location="cpu")
+        if "generator_ema" not in state:
+            raise RuntimeError(f"checkpoint has no 'generator_ema' (keys: {sorted(state)[:6]})")
+        ema = state["generator_ema"]
+        gen_sd = pipeline.generator.state_dict()
+        shape_bad = [k for k, v in ema.items() if k in gen_sd and tuple(gen_sd[k].shape) != tuple(v.shape)]
+        if shape_bad:
+            raise RuntimeError(f"{len(shape_bad)} EMA tensors have mismatched shapes, e.g. {shape_bad[:3]}")
+        probe_key = next(k for k in ema if k.endswith("blocks.0.self_attn.q.weight"))
+        before = gen_sd[probe_key].float().clone()
+        result = pipeline.generator.load_state_dict(ema, strict=True)
+        after = pipeline.generator.state_dict()[probe_key].float()
+        self.load_report = {
+            "checkpoint_bytes": ckpt.stat().st_size,  # sha256 is checked by the doctor (verify_sha256)
+            "ema_tensors": len(ema),
+            "generator_tensors": len(gen_sd),
+            "missing_keys": list(result.missing_keys),
+            "unexpected_keys": list(result.unexpected_keys),
+            "probe_tensor": probe_key,
+            "probe_changed_from_base": bool(not torch.equal(before, after)),
+            "probe_equals_ema": bool(torch.equal(after, ema[probe_key].float())),
+        }
+        if not (self.load_report["probe_changed_from_base"] and self.load_report["probe_equals_ema"]):
+            raise RuntimeError("EMA weights were not applied to the generator")
+        del state, ema
+        pipeline = pipeline.to(dtype=torch.bfloat16)
+        if self.offload:
+            from utils.memory import DynamicSwapInstaller, gpu
+
+            DynamicSwapInstaller.install_model(pipeline.text_encoder, device=gpu)
+        else:
+            pipeline.text_encoder.to(device=device)
+        pipeline.generator.to(device=device)
+        pipeline.vae.to(device=device)
+        torch.cuda.synchronize()
+        self.load_seconds = time.time() - t0
+        self.pipeline = pipeline
+        self.layers = len(pipeline.generator.model.blocks)
+
+        # --- phase timers around text encoder, generator, VAE decode (instance attributes of this pipeline) ---
+        self.phase = {"text_encode": 0.0, "generator": 0.0, "generator_denoise": 0.0, "generator_context": 0.0, "vae_decode": 0.0}
+        self.fwd = {"denoise": 0, "context": 0}
+        self.current = {"video": 0}
+        pipeline.text_encoder.forward = self._timed(pipeline.text_encoder.forward, "text_encode")
+        pipeline.generator.forward = self._timed(pipeline.generator.forward, "generator", counter=True)
+        pipeline.vae.decoder = self._timed(pipeline.vae.decoder, "vae_decode")
+        self.videos_generated = 0
+
+    # -- process-wide patches (idempotent) -----------------------------------------------------------------
+    @staticmethod
+    def _install_patches() -> None:
+        if _PATCHED["done"]:
+            return
+        import torch
+
+        _orig_load = torch.load
+
+        def _safe_load(*args, **kwargs):
+            kwargs["weights_only"] = True  # upstream passes weights_only=False for T5; refuse pickled code objects
+            kwargs.setdefault("mmap", True)  # page-cache backed instead of a second full copy in RAM
+            return _orig_load(*args, **kwargs)
+
+        torch.load = _safe_load
+        import utils.wan_wrapper as wan_wrapper
+        import wan.modules.attention as wan_attention
+        import wan.modules.causal_model as causal_model
+        import wan.modules.model as wan_model
+        import wan.modules.monarch_attn as monarch_attn
+
+        # Upstream builds the UMT5-XXL encoder in fp32 on the CPU (~23 GB) and then loads the bf16 file into it;
+        # the whole pipeline is cast to bf16 right after. Build it on the meta device and adopt the bf16 tensors
+        # instead: the resulting weights are bit-identical, without the 23 GB fp32 intermediate.
+        _orig_umt5 = wan_wrapper.umt5_xxl
+
+        def _umt5_meta(**kwargs):
+            kwargs.update(device="meta", dtype=torch.bfloat16)
+            model = _orig_umt5(**kwargs)
+            model.load_state_dict = lambda sd, strict=True: torch.nn.Module.load_state_dict(model, sd, strict=strict, assign=True)
+            return model
+
+        wan_wrapper.umt5_xxl = _umt5_meta
+
+        def _wrap(fn, key):
+            def inner(*a, **k):
+                _COUNTS[key] += 1
+                return fn(*a, **k)
+
+            return inner
+
+        # causal_model / model bind these names at import time and look them up as module globals on each call
+        causal_model.monarch_attn_with_kv_cache = _wrap(causal_model.monarch_attn_with_kv_cache, "monarch_kv_calls")
+        monarch_attn._attention_with_cache.apply = _wrap(monarch_attn._attention_with_cache.apply, "monarch_triton_calls")
+        monarch_attn.monarch_attn_slow = _wrap(monarch_attn.monarch_attn_slow, "monarch_torch_slow_calls")
+        causal_model.monarch_attn = _wrap(causal_model.monarch_attn, "monarch_no_cache_calls")
+        causal_model.attention = _wrap(causal_model.attention, "dense_self_attn_calls")
+        causal_model.flex_attention = _wrap(causal_model.flex_attention, "flex_attn_calls")
+        wan_model.flash_attention = _wrap(wan_model.flash_attention, "cross_attn_calls")
+        if not (wan_attention.FLASH_ATTN_2_AVAILABLE or wan_attention.FLASH_ATTN_3_AVAILABLE):
+            raise RuntimeError("flash-attn is required by the upstream cross-attention (wan/modules/attention.py)")
+
+        from triton.runtime import autotuner
+
+        _orig_bench = autotuner.Autotuner._bench
+
+        def _bench(self, *a, **k):
+            _AUTOTUNE["bench_calls"] += 1
+            return _orig_bench(self, *a, **k)
+
+        autotuner.Autotuner._bench = _bench
+        _PATCHED["done"] = True
+
+    def versions(self) -> dict:
+        import flash_attn
+        import flashinfer
+        import triton
+
+        torch = self.torch
+        return {
+            "python": sys.version.split()[0],
+            "torch": torch.__version__,
+            "cuda": torch.version.cuda,
+            "triton": triton.__version__,
+            "device": torch.cuda.get_device_name(0),
+            "capability": ".".join(map(str, torch.cuda.get_device_capability(0))),
+            "flashinfer": getattr(flashinfer, "__version__", "unknown"),
+            "flash_attn": flash_attn.__version__,
+        }
+
+    def _effective(self, config, cfg_file: str, margs: dict) -> dict:
+        return {
+            "config_file": cfg_file,
+            "monarch_args": margs,
+            "denoising_step_list": list(config.denoising_step_list),
+            "warp_denoising_step": bool(config.warp_denoising_step),
+            "num_frame_per_block": int(config.num_frame_per_block),
+            "context_noise": int(config.context_noise),
+            "timestep_shift": float(config.model_kwargs.timestep_shift),
+            "offload_text_encoder": self.offload,
+        }
+
+    def set_profile(self, profile: str) -> dict:
+        """Switch the attention profile between videos (no reload)."""
+        if profile != self.profile:
+            config, cfg_file, margs = profile_config(self.upstream, profile)
+            for key in ("denoising_step_list", "warp_denoising_step", "num_frame_per_block", "context_noise"):
+                if config.get(key) != self.config.get(key):
+                    raise RuntimeError(f"profile {profile!r} changes {key}; it needs a new process")
+            self.pipeline.generator.model.monarch_args = margs  # upstream property: sets every block's self-attention
+            self.profile, self.effective = profile, self._effective(config, cfg_file, margs)
+        return self.effective
+
+    def _timed(self, fn, key, counter=False):
+        torch = self.torch
+
         def inner(*a, **k):
-            if counter is not None:
+            if self.should_cancel is not None and self.should_cancel():
+                raise JobCancelled(f"cancelled before {key}")
+            if counter:
                 ts = k.get("timestep")
-                kind = "context" if ts is not None and int(ts.flatten()[0]) == int(config.context_noise) else "denoise"
-                fwd[kind] += 1
+                kind = "context" if ts is not None and int(ts.flatten()[0]) == int(self.config.context_noise) else "denoise"
+                self.fwd[kind] += 1
             torch.cuda.synchronize()
             s = time.time()
             out = fn(*a, **k)
             torch.cuda.synchronize()
             dt = time.time() - s
-            phase[key] += dt
-            if counter is not None:
-                phase[f"generator_{kind}"] += dt
-                _log("progress", video=current["video"], forwards=fwd["denoise"] + fwd["context"], forwards_per_video=FORWARDS_PER_VIDEO)
+            self.phase[key] += dt
+            if counter:
+                self.phase[f"generator_{kind}"] += dt
+                if self.on_progress is not None:
+                    self.on_progress(self.current["video"], self.fwd["denoise"] + self.fwd["context"])
             return out
 
         return inner
 
-    pipeline.text_encoder.forward = _timed(pipeline.text_encoder.forward, "text_encode")
-    pipeline.generator.forward = _timed(pipeline.generator.forward, "generator", counter=True)
-    vae_decoder_call = pipeline.vae.decoder
-    pipeline.vae.decoder = _timed(vae_decoder_call, "vae_decode")
+    def generate(self, index: int, video: dict, out_dir: Path, fps: int) -> dict:
+        """Generate one video into out_dir/NN.mp4 and return its record."""
+        import av
 
-    out_dir = job_dir / "videos"
-    out_dir.mkdir(exist_ok=False)
-    records = []
-    for idx, video in enumerate(job["videos"]):
-        current["video"] = idx
-        for k in phase:
-            phase[k] = 0.0
-        for k in fwd:
-            fwd[k] = 0
-        for k in counts:
-            counts[k] = 0
+        torch = self.torch
+        pipeline = self.pipeline
+        self.current["video"] = index
+        for k in self.phase:
+            self.phase[k] = 0.0
+        for k in self.fwd:
+            self.fwd[k] = 0
+        for k in _COUNTS:
+            _COUNTS[k] = 0
+        bench_before = _AUTOTUNE["bench_calls"]
         torch.cuda.reset_peak_memory_stats()
         torch.manual_seed(video["seed"])  # initial noise and the per-step re-noise draws
-        noise = torch.randn([1, LATENT_FRAMES, *LATENT_SHAPE], device=device, dtype=torch.bfloat16)
+        noise = torch.randn([1, LATENT_FRAMES, *LATENT_SHAPE], device=self.device, dtype=torch.bfloat16)
         noise_sha = hashlib.sha256(noise.float().cpu().numpy().tobytes()).hexdigest()
         torch.cuda.synchronize()
         s = time.time()
-        # low_memory mirrors upstream inference.py, which enables it (with the swap installer above) below 40 GB free VRAM
-        frames, latents = pipeline.inference(noise=noise, text_prompts=[video["prompt"]], return_latents=True, low_memory=offload)
+        try:
+            # low_memory mirrors upstream inference.py, which enables it (with the swap installer above) below 40 GB free VRAM
+            frames, latents = pipeline.inference(noise=noise, text_prompts=[video["prompt"]], return_latents=True, low_memory=self.offload)
+        finally:
+            pipeline.vae.model.clear_cache()
         torch.cuda.synchronize()
         t_inf = time.time() - s
-        pipeline.vae.model.clear_cache()
         rgb = (frames[0].clamp(0, 1) * 255.0).round().to(torch.uint8).permute(0, 2, 3, 1).contiguous().cpu().numpy()
         if not (frames.isfinite().all() and latents.isfinite().all()):
-            raise RuntimeError(f"video {idx}: non-finite output")
-        _check_dispatch(job["profile"], counts, fwd, len(pipeline.generator.model.blocks))
+            raise RuntimeError(f"video {index}: non-finite output")
+        _check_dispatch(self.profile, _COUNTS, self.fwd, self.layers)
+        latent_sha = hashlib.sha256(latents.float().cpu().numpy().tobytes()).hexdigest()
+        frames_sha = hashlib.sha256(rgb.tobytes()).hexdigest()
+        del frames, latents
         s = time.time()
-        mp4 = out_dir / f"{idx:02d}.mp4"
+        mp4 = out_dir / f"{index:02d}.mp4"
         with av.open(str(mp4), "w") as container:
-            stream = container.add_stream("libx264", rate=job.get("fps", 16))
+            stream = container.add_stream("libx264", rate=fps)
             stream.width, stream.height, stream.pix_fmt = rgb.shape[2], rgb.shape[1], "yuv420p"
             stream.options = {"crf": "18"}
             for f in rgb:
@@ -482,18 +555,22 @@ def _run(job: dict, job_dir: Path) -> int:
             for packet in stream.encode():
                 container.mux(packet)
         t_save = time.time() - s
-        rec = {
-            "index": idx,
+        phase = self.phase
+        self.videos_generated += 1
+        return {
+            "index": index,
             "file": f"videos/{mp4.name}",
             "sha256": _sha256(mp4),
             "seed": video["seed"],
             "prompt_sha256": hashlib.sha256(video["prompt"].encode("utf-8")).hexdigest(),
             "initial_noise_sha256": noise_sha,
-            "latent_frames": int(latents.shape[1]),
+            "latents_sha256": latent_sha,  # model output before VAE decode (bf16 -> fp32 bytes)
+            "rgb_frames_sha256": frames_sha,  # decoded uint8 frames before H.264 encoding
+            "latent_frames": LATENT_FRAMES,
             "rgb_frames": int(rgb.shape[0]),
             "height": int(rgb.shape[1]),
             "width": int(rgb.shape[2]),
-            "fps": job.get("fps", 16),
+            "fps": fps,
             "seconds": {
                 "inference_total": round(t_inf, 3),
                 "text_encode": round(phase["text_encode"], 3),
@@ -504,30 +581,56 @@ def _run(job: dict, job_dir: Path) -> int:
                 "other_in_inference": round(t_inf - phase["text_encode"] - phase["generator"] - phase["vae_decode"], 3),
                 "mp4_write": round(t_save, 3),
             },
-            "generator_forwards": dict(fwd),
-            "attention_dispatch": dict(counts),
+            "generator_forwards": dict(self.fwd),
+            "attention_dispatch": dict(_COUNTS),
+            "autotune_bench_calls": _AUTOTUNE["bench_calls"] - bench_before,
             "cuda_max_allocated_bytes": torch.cuda.max_memory_allocated(),
             "cuda_max_reserved_bytes": torch.cuda.max_memory_reserved(),
+            "cuda_allocated_bytes_after": torch.cuda.memory_allocated(),
             "device_used_bytes_after": int(torch.cuda.mem_get_info()[1] - torch.cuda.mem_get_info()[0]),  # whole GPU, all processes
         }
-        records.append(rec)
-        _log("video_done", index=idx, seconds=rec["seconds"], dispatch=rec["attention_dispatch"], forwards=rec["generator_forwards"])
 
-    result = {
-        "schema_version": SCHEMA_VERSION,
-        "job_id": job["job_id"],
-        "profile": job["profile"],
-        "effective_config": effective,
-        "weights": load_report,
-        "versions": versions,
-        "model_load_seconds": round(t_load, 3),
-        "process_seconds": round(time.time() - t_proc, 3),
-        "host_peak_rss_bytes": _peak_rss_bytes(),
-        "videos": records,
-    }
+
+def write_result(job_dir: Path, result: dict) -> None:
     tmp = job_dir / "result.json.tmp"
     tmp.write_text(json.dumps(result, indent=1, ensure_ascii=False), encoding="utf-8")
     tmp.replace(job_dir / "result.json")
+
+
+def _run(job: dict, job_dir: Path) -> int:
+    t_proc = time.time()
+    engine = Engine(
+        Path(job["upstream_dir"]).resolve(),
+        Path(job["models_dir"]).resolve(),
+        Path(job["checkpoint"]).resolve(),
+        job["profile"],
+        bool(job.get("offload_text_encoder", False)),
+        on_progress=lambda video, forwards: _log("progress", video=video, forwards=forwards, forwards_per_video=FORWARDS_PER_VIDEO),
+    )
+    _log("loaded", seconds=round(engine.load_seconds, 2))
+    out_dir = job_dir / "videos"
+    out_dir.mkdir(exist_ok=False)
+    records = []
+    for idx, video in enumerate(job["videos"]):
+        rec = engine.generate(idx, video, out_dir, job.get("fps", 16))
+        records.append(rec)
+        _log("video_done", index=idx, seconds=rec["seconds"], dispatch=rec["attention_dispatch"], forwards=rec["generator_forwards"])
+    write_result(
+        job_dir,
+        {
+            "schema_version": SCHEMA_VERSION,
+            "job_id": job["job_id"],
+            "profile": job["profile"],
+            "backend": "one-shot",
+            "effective_config": engine.effective,
+            "weights": engine.load_report,
+            "versions": engine.versions(),
+            "model_load_seconds": round(engine.load_seconds, 3),
+            "process_seconds": round(time.time() - t_proc, 3),
+            "host_peak_rss_bytes": _peak_rss_bytes(),
+            "videos": records,
+        },
+    )
     _log("done", job_id=job["job_id"])
     return 0
 

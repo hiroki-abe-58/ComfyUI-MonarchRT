@@ -137,3 +137,49 @@ Frame review of all 18 Monarch videos (frames 0, 20, 40, 60, 80 next to dense):
 These are six prompt/seed pairs reviewed by eye plus two simple metrics, not a
 quality benchmark (no VBench or user study). They show neither quality
 parity nor a systematic failure.
+
+## Persistent worker (v0.2.0)
+
+Measured 2026-10-02/03 on the same machine and runtime, through ComfyUI's
+HTTP API (`scripts/gpu_e2e_persistent.py`, ComfyUI v0.38.0, clean install);
+raw record: `docs/results/persistent_e2e_report.json`. Every row is a separate
+queue job; "wall" is from queueing to completion as seen by the client; the
+phase columns are measured inside the worker for the single video of the job.
+Before jobs that repeat earlier inputs the ComfyUI node cache was cleared
+(`POST /free`), so every row ran the generator.
+
+| Job (same worker unless noted) | Worker PID | Autotune benchmark runs | Wall | Text encode | Generator | VAE | Output |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| J1 `monarch_h2` P1 s101 (cold: new worker) | 339 | 1344 | 265.2 s | 62.3 s | 145.4 s | 3.6 s | = v0.1.0 one-shot |
+| J2 `monarch_h2` P2 s101 | 339 | 0 | 17.3 s | 4.1 s | 6.8 s | 4.6 s | |
+| J3 `monarch_h2` P1 s101 again | 339 | 0 | 11.1 s | 1.4 s | 5.4 s | 2.8 s | = J1 |
+| J4 `dense` P1 s101 | 339 | 0 | 12.1 s | 1.5 s | 6.4 s | 2.8 s | = v0.1.0 one-shot |
+| J5 `monarch_h2` P3 s2026 | 339 | 0 | 11.1 s | 1.5 s | 5.0 s | 2.8 s | = v0.1.0 one-shot |
+| J6 `dense` P1 s101 again | 339 | 0 | 12.1 s | 1.5 s | 6.4 s | 2.8 s | = J4 |
+| J7 `monarch_h1` P2 s2026 (first h1 job) | 339 | 1344 | 150.1 s | 1.4 s | 144.3 s | 3.0 s | = v0.1.0 one-shot |
+| J8 `monarch_h1` P2 s2026 again | 339 | 0 | 10.1 s | 1.7 s | 4.1 s | 2.9 s | = J7 |
+| O1 `monarch_h2` P1 s101, **one-shot** | new process | 1344 | 215.8 s | 21.5 s | 141.3 s | 7.4 s | = J1 |
+| O2 `monarch_h2` P2 s101, **one-shot** | new process | 1344 | 194.7 s | 5.1 s | 139.3 s | 7.1 s | |
+
+- Model load happens once per worker (28.7-31.3 s here); in one-shot it is
+  part of every job (29.7-32.0 s).
+- The Triton autotune timing pass (about 140 s for the Monarch kernels) runs
+  once per worker and attention profile instead of once per job. The kernels
+  themselves stay compiled on disk in both backends.
+- The first prompt encoding of a worker reads the 11 GB T5 file from the
+  NTFS mount (about 60 s); later encodings take 1.4-1.7 s.
+- Memory after every job stayed flat: worker RSS 14.19 GiB for J1-J6 (mostly
+  the memory-mapped model files) and 15.4 GiB after the first `monarch_h1`
+  job; whole-GPU use (nvidia-smi, including about 2.2 GB of desktop use)
+  20.4-21.0 GB. These are observations, not minimum requirements.
+
+Lifecycle checks in the same run (all passed): a Worker-node status and
+unload (GPU back to 2.2 GB, no process left), a new worker after unload with
+identical output, two jobs queued back to back, `/interrupt` during a 4-video
+job (clean cancel, the same worker ran the next job and produced output
+identical to J2), the worker killed while idle and while busy (the busy job
+failed, the next job started a new worker), a runtime with a missing
+checkpoint (start-up error), a runtime with a 1-minute timeout (error), a
+worker with a 60 s idle limit (exited by itself, GPU back to idle), and
+ComfyUI killed while the worker was idle and while it was busy (the worker
+stopped itself; no process left, GPU back to idle).

@@ -25,19 +25,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from monarchrt_job import ENV_KEYS, SECRET_RE, _proc_stat  # noqa: E402
 
 UPSTREAM_COMMIT = "34867c041ff7d70c699a9149f84857058d8ada92"
-# sha256 of the upstream files this integration depends on, at UPSTREAM_COMMIT
+# sha256 of the upstream files this integration depends on, at UPSTREAM_COMMIT, with line endings
+# normalised to LF (a Windows git with core.autocrlf=true checks the same commit out with CRLF)
 UPSTREAM_FILES = {
-    "wan/modules/monarch_attn.py": "b0ec12e04cb79ee61be249c91462404da553dba8945e19cc24774412ef42d657",
-    "wan/modules/causal_model.py": "c0647de5714bd5c61ffa1f92d1b06935038257ee8a5fb7cb262c24d34a4795e3",
-    "wan/modules/model.py": "7d5f28e24ea305c17f604bf00237c05eb5468607f7dab7fd4536efcd5abf2d17",
-    "wan/modules/attention.py": "d7dc1d5d364d4e65a73ca13206228142857a6140e33f183eefc3f70e295b4023",
-    "wan/modules/t5.py": "815e3ef8ff9fac3fe6d34d156642435652287f6a6c40a587ce25d7945d857f71",
-    "wan/modules/vae.py": "271d3d938b8ba2b2c009dabac1283ea8dc510f1639731356637d849ce6129969",
-    "pipeline/causal_inference.py": "2821b0d01217389503e16ab956a74c552410bc9e6919623594382181807043c0",
-    "utils/wan_wrapper.py": "5d72384cb625a594afc986e3b62ce6d7b1cfb306a9724445cf5be45ee446037d",
-    "configs/default_config.yaml": "7b52387097c659f67478f6ca5c0ca84ebb3874482c54f396b3217c54f06f1341",
-    "configs/self_forcing_dmd.yaml": "5462e712002aadbab9733603e39df114d7b993111d2a8721576553960168e5d0",
-    "configs/self_forcing_monarch_dmd.yaml": "debdf5aab8df6f9dc0d6b6c89911f008afbde0265a35391b0588a603add15d41",
+    "wan/modules/monarch_attn.py": "6c67b0b90d3a5df2c89e5ea9ea7dbaa1a8770fddbefa000d1823f14dd607f901",
+    "wan/modules/causal_model.py": "250df5455fae999eb6e336f741c1194603735ebb33cedbdb045afa7c84bfb304",
+    "wan/modules/model.py": "7a12954d6cf35bfceab873540d19c2318dae897c53efd20d885ac188e4a6457c",
+    "wan/modules/attention.py": "4532ee4b94de03a9cd3d8ef18999d75d00353c8ba114fc58754e873569fe0fa8",
+    "wan/modules/t5.py": "8b0cebf3192c542f92a344255a06c203df3ba24160715899a055cc8de0cd930f",
+    "wan/modules/vae.py": "2f58c33ed9b4640ca5191cd0ccbc744d9f0bdb72f4334983f38dcfc5c4ffdd31",
+    "pipeline/causal_inference.py": "9ead04b9315b75096cc7b70ee311c3de333bd33c2018e9be2db783aa35784da1",
+    "utils/wan_wrapper.py": "bf376ea942e53597bd3fe710fa07eef057d98105e8d177e92fa842e82ec2696c",
+    "configs/default_config.yaml": "8ec1cc2c5169fa8998adf9503f9ff3f1f75edafd145ca30930c9757a71a1ef5e",
+    "configs/self_forcing_dmd.yaml": "55b13d0eccda6b51ee4838a2b2ab4ca1a0a00e2198d21d0ca5610ef421749bc5",
+    "configs/self_forcing_monarch_dmd.yaml": "7f2149afeb15034a9b4e24cf7bd63ce21988c2acd06e0091c15a8626afc4d8a5",
 }
 # Wan-AI/Wan2.1-T2V-1.3B @ 37ec512624d61f7aa208f7ea8140a131f93afc9a (under models_dir)
 MODEL_FILES = {
@@ -60,6 +61,10 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: f.read(1 << 22), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _sha256_text(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def _git_head(repo: Path) -> str | None:
@@ -121,7 +126,7 @@ def main(argv: list[str]) -> int:
     bad = {}
     for rel, digest in UPSTREAM_FILES.items():
         p = upstream / rel
-        got = _sha256(p) if p.is_file() else None
+        got = _sha256_text(p) if p.is_file() else None
         if got != digest:
             bad[rel] = "missing" if got is None else "modified"
     add("upstream_files", "fail" if bad else "ok", bad or f"{len(UPSTREAM_FILES)} files match the pinned commit")

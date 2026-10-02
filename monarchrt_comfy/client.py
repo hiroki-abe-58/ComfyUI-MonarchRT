@@ -91,7 +91,11 @@ def host_to_runtime_path(rt: Runtime, path: Path) -> str:
 
 
 def build_argv(rt: Runtime, script: str, *args: str) -> list[str]:
-    script_path = host_to_runtime_path(rt, RUNTIME_SCRIPTS[script])
+    return argv_for(rt, host_to_runtime_path(rt, RUNTIME_SCRIPTS[script]), *args)
+
+
+def argv_for(rt: Runtime, script_path: str, *args: str) -> list[str]:
+    """argv that runs one of this package's scripts (already translated to a runtime path) with the runtime's Python."""
     if rt.kind == "wsl":
         return [_wsl_exe(), "-d", rt.distro, "--cd", "/", "--exec", rt.python, script_path, *args]
     return [rt.python, script_path, *args]

@@ -1,0 +1,1206 @@
+{
+ "gpu_idle_mib_before": 2229,
+ "checks": {
+  "same_worker_for_8_jobs": true,
+  "only_first_job_started_worker": true,
+  "job_numbers": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ],
+  "autotune_bench_calls_per_job": [
+   1344,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1344,
+   0
+  ],
+  "same_seed_rerun_identical": true,
+  "dense_monarch_dense_identical": true,
+  "h1_rerun_identical": true,
+  "memory_after_each_job": [
+   {
+    "label": "J1 ",
+    "rss_gib": 14.19,
+    "gpu_used_mib": 20446
+   },
+   {
+    "label": "J2 ",
+    "rss_gib": 14.19,
+    "gpu_used_mib": 20950
+   },
+   {
+    "label": "J3 ",
+    "rss_gib": 14.19,
+    "gpu_used_mib": 20950
+   },
+   {
+    "label": "J4 ",
+    "rss_gib": 14.19,
+    "gpu_used_mib": 20822
+   },
+   {
+    "label": "J5 ",
+    "rss_gib": 14.19,
+    "gpu_used_mib": 20950
+   },
+   {
+    "label": "J6 ",
+    "rss_gib": 14.19,
+    "gpu_used_mib": 20822
+   },
+   {
+    "label": "J7 ",
+    "rss_gib": 15.41,
+    "gpu_used_mib": 20494
+   },
+   {
+    "label": "J8 ",
+    "rss_gib": 15.42,
+    "gpu_used_mib": 20998
+   }
+  ],
+  "matches_one_shot_monarch_h2|P1|101": true,
+  "matches_one_shot_dense|P1|101": true,
+  "matches_one_shot_monarch_h2|P3|2026": true,
+  "matches_one_shot_monarch_h1|P2|2026": true,
+  "status_alive": true,
+  "back_to_back_queue": [
+   "success",
+   "success"
+  ],
+  "unload": {
+   "unloaded": true,
+   "leftover": [],
+   "gpu_used_mib": 2239
+  },
+  "new_worker_after_unload": true,
+  "after_unload_identical_output": true,
+  "cancel": {
+   "status": "error",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_interrupted"
+   ]
+  },
+  "recovered_after_cancel": {
+   "status": "success",
+   "same_worker": true,
+   "identical_to_J2": true
+  },
+  "recovered_after_idle_crash": {
+   "status": "success",
+   "new_worker": true
+  },
+  "busy_crash": {
+   "status": "error",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_error"
+   ]
+  },
+  "recovered_after_busy_crash": {
+   "status": "success",
+   "identical_to_J4": true
+  },
+  "errors": {
+   "missing_ckpt": [
+    "error",
+    "worker start-up failed: FileNotFoundError: checkpoint not found\n"
+   ],
+   "timeout": [
+    "error",
+    "runtime job exceeded its time limit\n"
+   ],
+   "recovered": "success"
+  },
+  "one_shot_vs_persistent_same_output": true,
+  "idle_timeout": {
+   "leftover": [],
+   "gpu_used_mib": 2226
+  },
+  "comfy_crash_idle": {
+   "leftover": [],
+   "gpu_used_mib": 2226
+  },
+  "comfy_crash_busy": {
+   "leftover": [],
+   "gpu_used_mib": 2226
+  }
+ },
+ "port": 53089,
+ "records": [
+  {
+   "label": "J1 monarch_h2 P1 s101 (cold)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 265.17,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 1344,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15238356992,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latents_sha256": "3981f3a2cd57186c0661f125096a6215917538da53c517fb57808fbed8e6528e",
+     "rgb_frames_sha256": "776a409df0f9b586e2bf5234aa26a0dfbbef9f6a5129914c4d1487995791fb4a",
+     "seconds": {
+      "inference_total": 211.495,
+      "text_encode": 62.29,
+      "generator_forwards": 145.38,
+      "generator_denoise": 144.421,
+      "generator_context": 0.959,
+      "vae_decode": 3.569,
+      "other_in_inference": 0.255,
+      "mp4_write": 2.291
+     },
+     "autotune_bench_calls": 1344,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 264.39,
+   "gpu_used_mib_after": 20446
+  },
+  {
+   "label": "J2 monarch_h2 P2 s101 (warm)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 17.3,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 2,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15237353472,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "fc6cdce6fbb7f390e69a71acd1d85ded745f75202449bd6272c55b496de49551",
+     "latents_sha256": "b6064e9ab922d23cc2712f0828f39d0e6c0847144b8d2a5e029bc83925a7a08d",
+     "rgb_frames_sha256": "05a42feef72570cb8d9ed9d8217f15eda0a83176cb368cfe3f71e4f2e3fa3e40",
+     "seconds": {
+      "inference_total": 15.646,
+      "text_encode": 4.12,
+      "generator_forwards": 6.81,
+      "generator_denoise": 5.678,
+      "generator_context": 1.132,
+      "vae_decode": 4.642,
+      "other_in_inference": 0.075,
+      "mp4_write": 1.156
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 17.04,
+   "gpu_used_mib_after": 20950
+  },
+  {
+   "label": "J3 monarch_h2 P1 s101 again (same seed, node cache cleared)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 11.13,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 3,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15238250496,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latents_sha256": "3981f3a2cd57186c0661f125096a6215917538da53c517fb57808fbed8e6528e",
+     "rgb_frames_sha256": "776a409df0f9b586e2bf5234aa26a0dfbbef9f6a5129914c4d1487995791fb4a",
+     "seconds": {
+      "inference_total": 9.63,
+      "text_encode": 1.378,
+      "generator_forwards": 5.42,
+      "generator_denoise": 4.322,
+      "generator_context": 1.099,
+      "vae_decode": 2.757,
+      "other_in_inference": 0.075,
+      "mp4_write": 0.483
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 10.34,
+   "gpu_used_mib_after": 20950
+  },
+  {
+   "label": "J4 dense P1 s101 (profile switch)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 12.14,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 4,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15238184960,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latents_sha256": "a22d42a725f23c4f6d09ecc71a1f07d499e4a897f959335bc4d88ff67109cc74",
+     "rgb_frames_sha256": "44b54098d3d1ba85e985041b304d90f3abd6db4e9581bb7942f133555b7141d0",
+     "seconds": {
+      "inference_total": 10.769,
+      "text_encode": 1.534,
+      "generator_forwards": 6.402,
+      "generator_denoise": 5.109,
+      "generator_context": 1.293,
+      "vae_decode": 2.753,
+      "other_in_inference": 0.079,
+      "mp4_write": 0.513
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 11.53,
+   "gpu_used_mib_after": 20822
+  },
+  {
+   "label": "J5 monarch_h2 P3 s2026 (dense -> Monarch)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 11.13,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 5,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15238619136,
+   "videos": [
+    {
+     "seed": 2026,
+     "sha256": "021c7e1b257f81c8d927f5a77a854b21bfbbb271de69ffb09d36abf0843a9e1d",
+     "latents_sha256": "841075966564255a6475fc7e742f1b9bb58a09cbde7108d684b5c67d7e4d66e1",
+     "rgb_frames_sha256": "ba08142648b428c08ebdeb86c26ceea9e6085922c9e36fc1e681b88da20bd80a",
+     "seconds": {
+      "inference_total": 9.389,
+      "text_encode": 1.542,
+      "generator_forwards": 5.013,
+      "generator_denoise": 4.022,
+      "generator_context": 0.991,
+      "vae_decode": 2.756,
+      "other_in_inference": 0.078,
+      "mp4_write": 0.59
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 10.2,
+   "gpu_used_mib_after": 20950
+  },
+  {
+   "label": "J6 dense P1 s101 again (Monarch -> dense)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 12.1,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 6,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15238709248,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latents_sha256": "a22d42a725f23c4f6d09ecc71a1f07d499e4a897f959335bc4d88ff67109cc74",
+     "rgb_frames_sha256": "44b54098d3d1ba85e985041b304d90f3abd6db4e9581bb7942f133555b7141d0",
+     "seconds": {
+      "inference_total": 10.757,
+      "text_encode": 1.485,
+      "generator_forwards": 6.428,
+      "generator_denoise": 5.14,
+      "generator_context": 1.288,
+      "vae_decode": 2.763,
+      "other_in_inference": 0.081,
+      "mp4_write": 0.496
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 11.48,
+   "gpu_used_mib_after": 20822
+  },
+  {
+   "label": "J7 monarch_h1 P2 s2026 (new profile in warm worker)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 150.07,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h1",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 7,
+   "autotune_bench_calls_this_job": 1344,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 16542052352,
+   "videos": [
+    {
+     "seed": 2026,
+     "sha256": "b5eb22fbad3946a9ecd76f77869fa84b064f9d4730725bf286c54f0e6bcd0ca6",
+     "latents_sha256": "f49ec929efd039f60304258761fcc52adcdaf1775d9840ec293cded669102e32",
+     "rgb_frames_sha256": "b33c329b5bc6909d0073a7d0d0535c88d48806aad65917069bd096e6c638d242",
+     "seconds": {
+      "inference_total": 148.827,
+      "text_encode": 1.423,
+      "generator_forwards": 144.282,
+      "generator_denoise": 143.121,
+      "generator_context": 1.161,
+      "vae_decode": 3.045,
+      "other_in_inference": 0.077,
+      "mp4_write": 0.413
+     },
+     "autotune_bench_calls": 1344,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 149.51,
+   "gpu_used_mib_after": 20494
+  },
+  {
+   "label": "J8 monarch_h1 P2 s2026 again",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 10.12,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h1",
+   "worker_id": "worker-20261002-235016-ff5a2af4224b",
+   "worker_pid": 339,
+   "started_for_this_job": false,
+   "job_number_in_worker": 8,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.71,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 16552411136,
+   "videos": [
+    {
+     "seed": 2026,
+     "sha256": "b5eb22fbad3946a9ecd76f77869fa84b064f9d4730725bf286c54f0e6bcd0ca6",
+     "latents_sha256": "f49ec929efd039f60304258761fcc52adcdaf1775d9840ec293cded669102e32",
+     "rgb_frames_sha256": "b33c329b5bc6909d0073a7d0d0535c88d48806aad65917069bd096e6c638d242",
+     "seconds": {
+      "inference_total": 9.049,
+      "text_encode": 1.705,
+      "generator_forwards": 4.122,
+      "generator_denoise": 3.297,
+      "generator_context": 0.825,
+      "vae_decode": 2.869,
+      "other_in_inference": 0.353,
+      "mp4_write": 0.409
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 9.69,
+   "gpu_used_mib_after": 20998
+  },
+  {
+   "label": "status",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 0.02,
+   "expect": "success",
+   "worker_report": {
+    "action": "status",
+    "backend": "persistent",
+    "events": [
+     {
+      "t": 1790952616.3,
+      "event": "worker_starting",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "runtime_id": "wsl-venv28"
+     },
+     {
+      "t": 1790952666.6,
+      "event": "worker_ready",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "pid": 339,
+      "load_s": 28.71
+     },
+     {
+      "t": 1790952880.6,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235016-4de6a17fa972",
+      "profile": "monarch_h2",
+      "videos": 1,
+      "wall_s": 264.39
+     },
+     {
+      "t": 1790952898.7,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235441-54352ba01cc9",
+      "profile": "monarch_h2",
+      "videos": 1,
+      "wall_s": 17.04
+     },
+     {
+      "t": 1790952912.4,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235502-3f17037c5faf",
+      "profile": "monarch_h2",
+      "videos": 1,
+      "wall_s": 10.34
+     },
+     {
+      "t": 1790952925.0,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235513-79c0f3157966",
+      "profile": "dense",
+      "videos": 1,
+      "wall_s": 11.53
+     },
+     {
+      "t": 1790952936.0,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235525-3958d47f2085",
+      "profile": "monarch_h2",
+      "videos": 1,
+      "wall_s": 10.2
+     },
+     {
+      "t": 1790952949.8,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235538-8a8099a2ee82",
+      "profile": "dense",
+      "videos": 1,
+      "wall_s": 11.48
+     },
+     {
+      "t": 1790953100.2,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235550-d0323801254c",
+      "profile": "monarch_h1",
+      "videos": 1,
+      "wall_s": 149.51
+     },
+     {
+      "t": 1790953111.8,
+      "event": "job_done",
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "job_id": "job-20261002-235822-303ca97b8d8b",
+      "profile": "monarch_h1",
+      "videos": 1,
+      "wall_s": 9.69
+     }
+    ],
+    "worker": {
+     "worker_id": "worker-20261002-235016-ff5a2af4224b",
+     "runtime_id": "wsl-venv28",
+     "alive": true,
+     "jobs_via_this_manager": 8,
+     "started_s_ago": 496.4,
+     "ready": {
+      "pid": 339,
+      "pgid": 339,
+      "startup_seconds": 43.4,
+      "model_load_seconds": 28.71
+     },
+     "bye": null,
+     "live": {
+      "worker_id": "worker-20261002-235016-ff5a2af4224b",
+      "t": 1790953112.636,
+      "pid": 339,
+      "pgid": 339,
+      "uptime_s": 489.5,
+      "idle_s": 0.9,
+      "idle_limit_s": 600,
+      "busy_with": null,
+      "engine_loaded": true,
+      "model_loads": 1,
+      "jobs_done": 8,
+      "jobs_failed": 0,
+      "jobs_cancelled": 0,
+      "autotune_bench_calls_total": 2688,
+      "rss_bytes": 16552411136,
+      "history": [
+       {
+        "request_id": "req-e3e391b0a1aa4998b1e223522b98f035",
+        "job_id": "job-20261002-235016-4de6a17fa972",
+        "profile": "monarch_h2",
+        "videos": 1,
+        "seconds": 214.08
+       },
+       {
+        "request_id": "req-99cf90635c554b2b870b13645c5d433c",
+        "job_id": "job-20261002-235441-54352ba01cc9",
+        "profile": "monarch_h2",
+        "videos": 1,
+        "seconds": 17.03
+       },
+       {
+        "request_id": "req-5408c0d7148d4e01a98a66e89332c835",
+        "job_id": "job-20261002-235502-3f17037c5faf",
+        "profile": "monarch_h2",
+        "videos": 1,
+        "seconds": 10.34
+       },
+       {
+        "request_id": "req-7a0da91853d64b6f98adf5c9fcf8c17e",
+        "job_id": "job-20261002-235513-79c0f3157966",
+        "profile": "dense",
+        "videos": 1,
+        "seconds": 11.52
+       },
+       {
+        "request_id": "req-d5782808898f4208b0dd890040d5ad5c",
+        "job_id": "job-20261002-235525-3958d47f2085",
+        "profile": "monarch_h2",
+        "videos": 1,
+        "seconds": 10.2
+       },
+       {
+        "request_id": "req-886e50fc86134296921ab2f9bff83c01",
+        "job_id": "job-20261002-235538-8a8099a2ee82",
+        "profile": "dense",
+        "videos": 1,
+        "seconds": 11.47
+       },
+       {
+        "request_id": "req-c062830d500b4c91b084c145c0d94789",
+        "job_id": "job-20261002-235550-d0323801254c",
+        "profile": "monarch_h1",
+        "videos": 1,
+        "seconds": 149.5
+       },
+       {
+        "request_id": "req-06a4d22c64e04dda8e823183aee217d6",
+        "job_id": "job-20261002-235822-303ca97b8d8b",
+        "profile": "monarch_h1",
+        "videos": 1,
+        "seconds": 9.69
+       }
+      ],
+      "profile": "monarch_h1",
+      "videos_generated": 8,
+      "cuda_allocated_bytes": 9257453056,
+      "cuda_reserved_bytes": 14988345344
+     }
+    }
+   },
+   "gpu_used_mib_after": 20998
+  },
+  {
+   "label": "unload",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 3.09,
+   "expect": "success",
+   "worker_report": {
+    "action": "unload",
+    "unloaded": true,
+    "worker_id": "worker-20261002-235016-ff5a2af4224b",
+    "stop": {
+     "job_dir_name": "worker-20261002-235016-ff5a2af4224b",
+     "status": "not_running",
+     "reason": "Unload node"
+    }
+   },
+   "gpu_used_mib_after": 2239
+  },
+  {
+   "label": "A1 after unload (new worker)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 250.79,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261002-235902-cb088aad3ff8",
+   "worker_pid": 821,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 1344,
+   "worker_model_load_seconds": 29.797,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15340486656,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latents_sha256": "3981f3a2cd57186c0661f125096a6215917538da53c517fb57808fbed8e6528e",
+     "rgb_frames_sha256": "776a409df0f9b586e2bf5234aa26a0dfbbef9f6a5129914c4d1487995791fb4a",
+     "seconds": {
+      "inference_total": 207.989,
+      "text_encode": 60.597,
+      "generator_forwards": 144.294,
+      "generator_denoise": 143.277,
+      "generator_context": 1.017,
+      "vae_decode": 2.996,
+      "other_in_inference": 0.103,
+      "mp4_write": 0.52
+     },
+     "autotune_bench_calls": 1344,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 250.53,
+   "gpu_used_mib_after": 20466
+  },
+  {
+   "label": "A2 after cancel",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 11.2,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261002-235902-cb088aad3ff8",
+   "worker_pid": 821,
+   "started_for_this_job": false,
+   "job_number_in_worker": 2,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 29.797,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15341076480,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "fc6cdce6fbb7f390e69a71acd1d85ded745f75202449bd6272c55b496de49551",
+     "latents_sha256": "b6064e9ab922d23cc2712f0828f39d0e6c0847144b8d2a5e029bc83925a7a08d",
+     "rgb_frames_sha256": "05a42feef72570cb8d9ed9d8217f15eda0a83176cb368cfe3f71e4f2e3fa3e40",
+     "seconds": {
+      "inference_total": 9.822,
+      "text_encode": 1.637,
+      "generator_forwards": 5.161,
+      "generator_denoise": 4.191,
+      "generator_context": 0.97,
+      "vae_decode": 2.945,
+      "other_in_inference": 0.08,
+      "mp4_write": 0.441
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 10.48,
+   "gpu_used_mib_after": 20970
+  },
+  {
+   "label": "A3 after worker crash (idle)",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 252.48,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "monarch_h2",
+   "worker_id": "worker-20261003-000345-538dc5423bd7",
+   "worker_pid": 1149,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 1344,
+   "worker_model_load_seconds": 31.342,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 15340179456,
+   "videos": [
+    {
+     "seed": 2026,
+     "sha256": "021c7e1b257f81c8d927f5a77a854b21bfbbb271de69ffb09d36abf0843a9e1d",
+     "latents_sha256": "841075966564255a6475fc7e742f1b9bb58a09cbde7108d684b5c67d7e4d66e1",
+     "rgb_frames_sha256": "ba08142648b428c08ebdeb86c26ceea9e6085922c9e36fc1e681b88da20bd80a",
+     "seconds": {
+      "inference_total": 205.072,
+      "text_encode": 58.175,
+      "generator_forwards": 142.87,
+      "generator_denoise": 141.873,
+      "generator_context": 0.997,
+      "vae_decode": 3.926,
+      "other_in_inference": 0.101,
+      "mp4_write": 1.474
+     },
+     "autotune_bench_calls": 1344,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 251.89,
+   "gpu_used_mib_after": 20445
+  },
+  {
+   "label": "A4 after busy crash",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 115.0,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261003-000817-70dedd611dd4",
+   "worker_pid": 1530,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 30.85,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 14724378624,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latents_sha256": "a22d42a725f23c4f6d09ecc71a1f07d499e4a897f959335bc4d88ff67109cc74",
+     "rgb_frames_sha256": "44b54098d3d1ba85e985041b304d90f3abd6db4e9581bb7942f133555b7141d0",
+     "seconds": {
+      "inference_total": 69.776,
+      "text_encode": 59.749,
+      "generator_forwards": 6.728,
+      "generator_denoise": 5.409,
+      "generator_context": 1.319,
+      "vae_decode": 3.183,
+      "other_in_inference": 0.116,
+      "mp4_write": 0.481
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 114.66,
+   "gpu_used_mib_after": 17050
+  },
+  {
+   "label": "E1 missing checkpoint",
+   "status": "error",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_error"
+   ],
+   "error": "worker start-up failed: FileNotFoundError: checkpoint not found\n",
+   "wall_s": 4.09,
+   "expect": "error",
+   "gpu_used_mib_after": 2241
+  },
+  {
+   "label": "E2 1-minute timeout",
+   "status": "error",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_error"
+   ],
+   "error": "runtime job exceeded its time limit\n",
+   "wall_s": 102.71,
+   "expect": "error",
+   "gpu_used_mib_after": 11862
+  },
+  {
+   "label": "A5 after errors",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 112.75,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261003-001206-5e5ca0ec28f7",
+   "worker_pid": 1942,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 28.981,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 14723190784,
+   "videos": [
+    {
+     "seed": 2026,
+     "sha256": "37386b5880f08b0831986cbeb2974ce01ab2e96ba47d3f4abcb0e3568b8c273f",
+     "latents_sha256": "b3eea94141938f1a266614b9109df62616d7c9605a9c6b57edabd79db2539844",
+     "rgb_frames_sha256": "c689ac54e94891508682626529dca8e558390c39dbc47fb091ee757dec46cd71",
+     "seconds": {
+      "inference_total": 67.593,
+      "text_encode": 57.616,
+      "generator_forwards": 6.846,
+      "generator_denoise": 5.532,
+      "generator_context": 1.313,
+      "vae_decode": 3.02,
+      "other_in_inference": 0.112,
+      "mp4_write": 0.517
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 112.21,
+   "gpu_used_mib_after": 17050
+  },
+  {
+   "label": "O1 one-shot monarch_h2 P1 s101",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 215.78,
+   "expect": "success",
+   "backend": "one-shot",
+   "profile": "monarch_h2",
+   "worker_id": null,
+   "worker_pid": null,
+   "started_for_this_job": null,
+   "job_number_in_worker": null,
+   "autotune_bench_calls_this_job": null,
+   "worker_model_load_seconds": null,
+   "model_load_seconds": 32.031,
+   "rss_bytes_after": null,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latents_sha256": "3981f3a2cd57186c0661f125096a6215917538da53c517fb57808fbed8e6528e",
+     "rgb_frames_sha256": "776a409df0f9b586e2bf5234aa26a0dfbbef9f6a5129914c4d1487995791fb4a",
+     "seconds": {
+      "inference_total": 170.632,
+      "text_encode": 21.446,
+      "generator_forwards": 141.263,
+      "generator_denoise": 140.274,
+      "generator_context": 0.988,
+      "vae_decode": 7.433,
+      "other_in_inference": 0.491,
+      "mp4_write": 0.547
+     },
+     "autotune_bench_calls": 1344,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 215.35,
+   "gpu_used_mib_after": 16837
+  },
+  {
+   "label": "O2 one-shot monarch_h2 P2 s101",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 194.65,
+   "expect": "success",
+   "backend": "one-shot",
+   "profile": "monarch_h2",
+   "worker_id": null,
+   "worker_pid": null,
+   "started_for_this_job": null,
+   "job_number_in_worker": null,
+   "autotune_bench_calls_this_job": null,
+   "worker_model_load_seconds": null,
+   "model_load_seconds": 29.686,
+   "rss_bytes_after": null,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "fc6cdce6fbb7f390e69a71acd1d85ded745f75202449bd6272c55b496de49551",
+     "latents_sha256": "b6064e9ab922d23cc2712f0828f39d0e6c0847144b8d2a5e029bc83925a7a08d",
+     "rgb_frames_sha256": "05a42feef72570cb8d9ed9d8217f15eda0a83176cb368cfe3f71e4f2e3fa3e40",
+     "seconds": {
+      "inference_total": 151.683,
+      "text_encode": 5.054,
+      "generator_forwards": 139.341,
+      "generator_denoise": 138.35,
+      "generator_context": 0.991,
+      "vae_decode": 7.062,
+      "other_in_inference": 0.227,
+      "mp4_write": 0.44
+     },
+     "autotune_bench_calls": 1344,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 194.33,
+   "gpu_used_mib_after": 16837
+  },
+  {
+   "label": "unload before idle test",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 2.03,
+   "expect": "success",
+   "worker_report": {
+    "action": "unload",
+    "unloaded": true,
+    "worker_id": "worker-20261003-001206-5e5ca0ec28f7",
+    "stop": {
+     "job_dir_name": "worker-20261003-001206-5e5ca0ec28f7",
+     "status": "not_running",
+     "reason": "Unload node"
+    }
+   },
+   "gpu_used_mib_after": 2110
+  },
+  {
+   "label": "I1 idle60 job",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 117.15,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261003-002053-57c9d74a56df",
+   "worker_pid": 2569,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 29.73,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 14738362368,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latents_sha256": "a22d42a725f23c4f6d09ecc71a1f07d499e4a897f959335bc4d88ff67109cc74",
+     "rgb_frames_sha256": "44b54098d3d1ba85e985041b304d90f3abd6db4e9581bb7942f133555b7141d0",
+     "seconds": {
+      "inference_total": 71.718,
+      "text_encode": 61.961,
+      "generator_forwards": 6.6,
+      "generator_denoise": 5.319,
+      "generator_context": 1.281,
+      "vae_decode": 3.047,
+      "other_in_inference": 0.111,
+      "mp4_write": 0.507
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 116.19,
+   "gpu_used_mib_after": 16977
+  },
+  {
+   "label": "C1 worker for idle-crash test",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 114.75,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261003-002416-7102355ca14f",
+   "worker_pid": 453,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 29.746,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 14716846080,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latents_sha256": "a22d42a725f23c4f6d09ecc71a1f07d499e4a897f959335bc4d88ff67109cc74",
+     "rgb_frames_sha256": "44b54098d3d1ba85e985041b304d90f3abd6db4e9581bb7942f133555b7141d0",
+     "seconds": {
+      "inference_total": 66.642,
+      "text_encode": 56.422,
+      "generator_forwards": 6.727,
+      "generator_denoise": 5.455,
+      "generator_context": 1.272,
+      "vae_decode": 3.387,
+      "other_in_inference": 0.107,
+      "mp4_write": 0.478
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 113.72,
+   "gpu_used_mib_after": 17016
+  },
+  {
+   "label": "C2 worker for busy-crash test",
+   "status": "success",
+   "messages": [
+    "execution_start",
+    "execution_cached",
+    "execution_success"
+   ],
+   "error": null,
+   "wall_s": 117.84,
+   "expect": "success",
+   "backend": "persistent",
+   "profile": "dense",
+   "worker_id": "worker-20261003-002640-5adb93a4ab37",
+   "worker_pid": 315,
+   "started_for_this_job": true,
+   "job_number_in_worker": 1,
+   "autotune_bench_calls_this_job": 0,
+   "worker_model_load_seconds": 30.02,
+   "model_load_seconds": 0.0,
+   "rss_bytes_after": 14716100608,
+   "videos": [
+    {
+     "seed": 101,
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latents_sha256": "a22d42a725f23c4f6d09ecc71a1f07d499e4a897f959335bc4d88ff67109cc74",
+     "rgb_frames_sha256": "44b54098d3d1ba85e985041b304d90f3abd6db4e9581bb7942f133555b7141d0",
+     "seconds": {
+      "inference_total": 68.627,
+      "text_encode": 57.272,
+      "generator_forwards": 6.73,
+      "generator_denoise": 5.46,
+      "generator_context": 1.27,
+      "vae_decode": 4.402,
+      "other_in_inference": 0.222,
+      "mp4_write": 0.513
+     },
+     "autotune_bench_calls": 0,
+     "cuda_max_reserved_bytes": null
+    }
+   ],
+   "report_wall_seconds": 116.82,
+   "gpu_used_mib_after": 17016
+  }
+ ],
+ "gpu_idle_mib_after": 2226
+}

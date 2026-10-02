@@ -1,5 +1,5 @@
 {
- "id": "461c272a-8742-40d3-bfcd-af3f1bfe9ed6",
+ "id": "cefef24b-a12a-4bcc-ad71-6e6067106cd1",
  "revision": 0,
  "last_node_id": 7,
  "last_link_id": 12,
@@ -13,7 +13,7 @@
    ],
    "size": [
     270,
-    58
+    82
    ],
    "flags": {},
    "order": 0,
@@ -34,6 +34,23 @@
      "type": "COMBO",
      "widget": {
       "name": "runtime_id"
+     },
+     "link": null
+    },
+    {
+     "color_off": null,
+     "color_on": null,
+     "dir": null,
+     "label": null,
+     "localized_name": "backend",
+     "locked": null,
+     "name": "backend",
+     "nameLocked": null,
+     "removable": null,
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "backend"
      },
      "link": null
     }
@@ -63,10 +80,12 @@
     "Node name for S&R": "MonarchRTRuntime"
    },
    "widgets_values": [
-    "wsl-reference"
+    "wsl-reference",
+    "runtime default"
    ],
    "widgets_values_named": {
-    "runtime_id": "wsl-reference"
+    "runtime_id": "wsl-reference",
+    "backend": "runtime default"
    }
   },
   {

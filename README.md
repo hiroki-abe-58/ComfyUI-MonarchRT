@@ -19,17 +19,20 @@ from ComfyUI, next to a dense baseline on the same weights, prompt, noise and
 seed:
 
 - **MonarchRT Runtime**: pick a runtime the administrator registered (a WSL2
-  or Linux venv with the pinned upstream checkout and the weights). Workflows
-  cannot name executables or commands.
+  or Linux venv with the pinned upstream checkout and the weights) and the
+  backend (`persistent` or `one-shot`, see below). Workflows cannot name
+  executables or commands.
 - **MonarchRT Generate (Self-Forcing T2V)**: 480x832, 81 frames at 16 fps,
-  1-4 videos per job (the model is loaded and the kernels are tuned once).
-  Attention profiles: `monarch_h2` (default), `monarch_h1`, `dense`. Returns
-  real ComfyUI `VIDEO` outputs (connect `Save Video`) and a JSON report with
-  the attention dispatch actually observed, forward counts, per-phase
-  timings and memory.
+  1-4 videos per job. Attention profiles: `monarch_h2` (default),
+  `monarch_h1`, `dense`. Returns real ComfyUI `VIDEO` outputs (connect
+  `Save Video`) and a JSON report with the attention dispatch actually
+  observed, forward counts, per-phase timings, memory and the worker that ran
+  the job.
+- **MonarchRT Worker (status / unload)**: shows the persistent worker or stops
+  it and frees its GPU and RAM.
 - **MonarchRT Doctor**: checks the runtime (upstream files against the pinned
   commit, model files, CUDA/Triton/flash-attn/FlashInfer, optional Monarch
-  kernel vs reference check).
+  kernel vs reference check) and reports the worker.
 
 ![Same prompt, seed and noise: dense / MonarchRT h_reduce=2 / MonarchRT h_reduce=1 (reduced preview)](docs/img/waves_dense_h2_h1.gif)
 
@@ -65,6 +68,36 @@ process; details, cold-start costs and raw records in
   dense and reversed generation orders give bit-identical files, so no cache
   or patch leaks between videos or profiles.
 
+## Backends: one-shot and persistent (v0.2.0)
+
+| | `one-shot` | `persistent` |
+| --- | --- | --- |
+| Process | a new runtime process per queue job | one warm worker process kept between queue jobs |
+| Model load, Triton autotune | every job | once per worker (autotune once per attention profile) |
+| Between jobs | nothing stays loaded | the worker holds the model on the GPU until it is unloaded |
+| Ends | when the job ends | after `worker_idle_seconds` without a job (default 300), the **Worker** node's unload, a runtime or code change, or when ComfyUI exits or crashes |
+
+Measured on the reference machine (RTX 5090, WSL2, offloaded T5), each row a
+separate ComfyUI queue job through the HTTP API, wall time from queueing to
+completion:
+
+| Job | `one-shot` | `persistent` |
+| --- | --- | --- |
+| `monarch_h2`, first job (cold) | 216 s | 265 s (start-up 29 s + first T5 read 60 s + autotune ~143 s) |
+| `monarch_h2`, later jobs | 195 s | 10-12 s (17 s for the first warm job) |
+| `dense`, later jobs | - | 12 s |
+| first `monarch_h1` job in a warm `monarch_h2` worker | - | 150 s (autotune for the new kernel shapes), then 10 s |
+
+Outputs are byte-identical between the backends and to the v0.1.0 one-shot
+files for the same prompt, seed and profile, including after profile switches
+(dense -> Monarch -> dense), Unload, cancel and crashes. While a persistent
+worker is idle it keeps about 18 GB of GPU memory and about 14-16 GiB of RAM in
+WSL2 (mostly the memory-mapped model files); use the Worker node to free them
+early. Details: [docs/BENCHMARKS.md](docs/BENCHMARKS.md#persistent-worker-v020).
+
+`backend` defaults to the runtime's `backend` setting (`one-shot` if not set),
+so v0.1.0 workflows and configs keep working unchanged.
+
 ## Attention profiles
 
 | Profile | Upstream config | Monarch settings | Effective attention sparsity |
@@ -84,9 +117,9 @@ no silent fallback from Monarch to dense.
 
 | | Scope |
 | --- | --- |
-| **Tested** (real weights) | ComfyUI v0.38.0 on Windows 11 with a WSL2 Ubuntu 24.04 runtime (torch 2.8.0+cu128, triton 3.4.0, flash-attn 2.8.3, flashinfer 0.6.3), RTX 5090 32 GB. All three profiles, 480x832x81, batch 1. Through ComfyUI's HTTP API: generation with `Save Video`, Doctor, cancel, timeout and runtime errors (no process left behind, GPU memory back to idle). Clean install from `git archive` into a differently named folder. |
-| **Tested** (CPU CI) | Ubuntu and Windows: config and job validation, argv/environment construction, real subprocess control with a fake runtime (cancel/timeout stop the whole process tree on Linux), node registration and `validate_prompt` in a real ComfyUI checkout, `VIDEO` outputs. |
-| **Untested** | Linux ComfyUI hosts (`posix` runtimes) with real weights, other GPUs and drivers, GPUs below 32 GB, other resolutions or lengths, image-to-video, `num_iters > 1`. |
+| **Tested** (real weights) | ComfyUI v0.38.0 on Windows 11 with a WSL2 Ubuntu 24.04 runtime (torch 2.8.0+cu128, triton 3.4.0, flash-attn 2.8.3, flashinfer 0.6.3), RTX 5090 32 GB. All three profiles, 480x832x81, batch 1. Through ComfyUI's HTTP API: generation with `Save Video`, Doctor, cancel, timeout and runtime errors (no process left behind, GPU memory back to idle). Persistent worker (v0.2.0): 8 separate queue jobs on one worker, profile switches, Unload, idle timeout, cancel, worker crash and ComfyUI crash (idle and busy), missing checkpoint, timeout, back-to-back queueing; outputs identical to one-shot. Clean install from `git archive` into a differently named folder. |
+| **Tested** (CPU CI) | Ubuntu and Windows: config and job validation, argv/environment construction, real subprocess control with a fake runtime (cancel/timeout stop the whole process tree on Linux), the persistent worker protocol and lifecycle with a fake engine (reuse, serialisation, busy/duplicate requests, cancel, timeout, crashes, parent death on Linux), node registration and `validate_prompt` in a real ComfyUI checkout, `VIDEO` outputs. |
+| **Untested** | Linux ComfyUI hosts (`posix` runtimes) with real weights, other GPUs and drivers, GPUs below 32 GB, other resolutions or lengths, image-to-video, `num_iters > 1`, more than one ComfyUI process sharing a GPU with a persistent worker. |
 | **Not supported** | Native Windows runtimes (no WSL2), MonarchRT-trained checkpoints (not released upstream), running the pipeline inside ComfyUI's own Python. |
 
 ## Install

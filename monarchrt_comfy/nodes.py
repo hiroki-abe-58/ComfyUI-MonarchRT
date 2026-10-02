@@ -9,6 +9,12 @@ from . import client
 from .config import CONFIG_ENV, CONFIG_FILENAME, ConfigError, config_path, load_runtimes
 
 NO_RUNTIME = "(no runtime configured)"
+BACKEND_CHOICES = ("runtime default", "persistent", "one-shot")
+BACKEND_HELP = (
+    "persistent: keep one warm runtime process between queue jobs (model and tuned kernels stay loaded until "
+    "the idle timeout, Unload, or ComfyUI exits). one-shot: a fresh process per job. runtime default: the "
+    "runtime's 'backend' setting (one-shot unless the administrator chose persistent)."
+)
 PROFILE_HELP = {
     "monarch_h2": "MonarchRT, training-free: Monarch attention on the public dense Self-Forcing weights, h_reduce=2 (about 90% effective attention sparsity; the training-free setting discussed in upstream issue #2).",
     "monarch_h1": "MonarchRT, training-free, h_reduce=1 (the upstream config default, about 95% effective sparsity; the paper pairs this with trained weights, so expect lower quality without them).",
@@ -46,7 +52,10 @@ class MonarchRTRuntime:
         return {
             "required": {
                 "runtime_id": (_runtime_ids(), {"tooltip": f"Runtimes come from {CONFIG_FILENAME} (administrator config), never from the workflow."}),
-            }
+            },
+            "optional": {
+                "backend": (list(BACKEND_CHOICES), {"default": "runtime default", "tooltip": BACKEND_HELP}),
+            },
         }
 
     RETURN_TYPES = ("MONARCHRT_RUNTIME",)
@@ -55,9 +64,11 @@ class MonarchRTRuntime:
     CATEGORY = "MonarchRT"
     DESCRIPTION = "Pick a MonarchRT runtime registered by the administrator."
 
-    def select(self, runtime_id):
+    def select(self, runtime_id, backend="runtime default"):
         rt = _resolve(runtime_id)
-        return ({"runtime_id": rt.id},)
+        if backend not in BACKEND_CHOICES:
+            raise ValueError(f"backend must be one of {BACKEND_CHOICES}")
+        return ({"runtime_id": rt.id, "backend": rt.backend if backend == "runtime default" else backend},)
 
 
 class MonarchRTGenerate:
@@ -77,7 +88,7 @@ class MonarchRTGenerate:
                         "default": 1,
                         "min": 1,
                         "max": 4,
-                        "tooltip": "Videos from one runtime process (seeds seed, seed+1, ...): the model is loaded and the kernels are tuned once.",
+                        "tooltip": "Videos in this job (seeds seed, seed+1, ...), generated one after another by the same runtime process.",
                     },
                 ),
             }
@@ -110,8 +121,17 @@ class MonarchRTGenerate:
         total = client.FORWARDS_PER_VIDEO * len(specs)
         pbar = comfy.utils.ProgressBar(total)
         t0 = time.time()
+        backend = runtime.get("backend") or rt.backend
+        if backend == "persistent":
+            from .worker import MANAGER
+
+            run = MANAGER.generate
+        elif backend == "one-shot":
+            run = client.generate
+        else:
+            raise ValueError(f"unknown backend {backend!r}")
         try:
-            outcome = client.generate(
+            outcome = run(
                 rt,
                 attention,
                 specs,
@@ -121,6 +141,7 @@ class MonarchRTGenerate:
         except client.JobCancelled as exc:
             raise mm.InterruptProcessingException() from exc
         report = _report(outcome, rt, attention, time.time() - t0)
+        report["backend"] = backend
         return ([InputImpl.VideoFromFile(str(p)) for p in outcome.videos], json.dumps(report, indent=1, ensure_ascii=False))
 
 
@@ -134,6 +155,7 @@ def _report(outcome: client.JobOutcome, rt, profile: str, wall_s: float) -> dict
         "job": outcome.job_dir.name,
         "wall_seconds": round(wall_s, 2),
         "model_load_seconds": r.get("model_load_seconds"),
+        "worker": r.get("worker"),
         "effective_config": r.get("effective_config"),
         "weights": r.get("weights"),
         "versions": r.get("versions"),
@@ -149,8 +171,11 @@ def _report(outcome: client.JobOutcome, rt, profile: str, wall_s: float) -> dict
                     "seconds",
                     "generator_forwards",
                     "attention_dispatch",
+                    "autotune_bench_calls",
                     "cuda_max_allocated_bytes",
                     "sha256",
+                    "latents_sha256",
+                    "rgb_frames_sha256",
                 )
                 if k in v
             }
@@ -207,17 +232,55 @@ class MonarchRTDoctor:
             report = client.doctor(runtimes[runtime_id], verify_sha256=verify_sha256, kernel_check=kernel_check, interrupted=mm.processing_interrupted)
         except client.JobCancelled as exc:
             raise mm.InterruptProcessingException() from exc
+        from .worker import MANAGER
+
+        report["persistent_worker"] = MANAGER.status()
         lines = [f"{runtime_id}: {report.get('overall')}"] + [f"{c['status']:>4}  {c['name']}" for c in report.get("checks", [])]
         return {"ui": {"text": ["\n".join(lines)]}, "result": (json.dumps(report, indent=1, ensure_ascii=False),)}
+
+
+class MonarchRTWorker:
+    """Show or stop the persistent worker (the warm runtime process kept between queue jobs)."""
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"action": (["status", "unload"], {"tooltip": "unload stops the worker now and frees its GPU and RAM."})}}
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("report",)
+    FUNCTION = "run"
+    CATEGORY = "MonarchRT"
+    OUTPUT_NODE = True
+    DESCRIPTION = "Status or unload of the persistent MonarchRT worker."
+
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return time.time()
+
+    def run(self, action):
+        from .worker import MANAGER
+
+        if action == "unload":
+            out = {"action": "unload", **MANAGER.unload("Unload node")}
+            summary = "unloaded " + str(out.get("worker_id")) if out.get("unloaded") else "no worker was running"
+        elif action == "status":
+            out = {"action": "status", **MANAGER.status()}
+            w = out.get("worker")
+            summary = "no worker" if not w else f"{w['worker_id']} alive={w['alive']} jobs={w['jobs_via_this_manager']}"
+        else:
+            raise ValueError("action must be status or unload")
+        return {"ui": {"text": [summary]}, "result": (json.dumps(out, indent=1, ensure_ascii=False, default=str),)}
 
 
 NODE_CLASS_MAPPINGS = {
     "MonarchRTRuntime": MonarchRTRuntime,
     "MonarchRTGenerate": MonarchRTGenerate,
     "MonarchRTDoctor": MonarchRTDoctor,
+    "MonarchRTWorker": MonarchRTWorker,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "MonarchRTRuntime": "MonarchRT Runtime",
     "MonarchRTGenerate": "MonarchRT Generate (Self-Forcing T2V)",
     "MonarchRTDoctor": "MonarchRT Doctor",
+    "MonarchRTWorker": "MonarchRT Worker (status / unload)",
 }

@@ -1,19 +1,19 @@
 {
- "id": "09edaad4-8443-4b19-a3e7-e309c197475d",
+ "id": "87444acd-5dee-4bd0-a62f-91fdfca86d3f",
  "revision": 0,
  "last_node_id": 2,
  "last_link_id": 2,
  "nodes": [
   {
    "id": 1,
-   "type": "MonarchRTDoctor",
+   "type": "MonarchRTWorker",
    "pos": [
     100,
     130
    ],
    "size": [
-    270,
-    106
+    340.265234375,
+    58
    ],
    "flags": {},
    "order": 0,
@@ -25,49 +25,15 @@
      "color_on": null,
      "dir": null,
      "label": null,
-     "localized_name": "runtime_id",
+     "localized_name": "action",
      "locked": null,
-     "name": "runtime_id",
+     "name": "action",
      "nameLocked": null,
      "removable": null,
      "shape": null,
      "type": "COMBO",
      "widget": {
-      "name": "runtime_id"
-     },
-     "link": null
-    },
-    {
-     "color_off": null,
-     "color_on": null,
-     "dir": null,
-     "label": null,
-     "localized_name": "verify_sha256",
-     "locked": null,
-     "name": "verify_sha256",
-     "nameLocked": null,
-     "removable": null,
-     "shape": null,
-     "type": "BOOLEAN",
-     "widget": {
-      "name": "verify_sha256"
-     },
-     "link": null
-    },
-    {
-     "color_off": null,
-     "color_on": null,
-     "dir": null,
-     "label": null,
-     "localized_name": "kernel_check",
-     "locked": null,
-     "name": "kernel_check",
-     "nameLocked": null,
-     "removable": null,
-     "shape": null,
-     "type": "BOOLEAN",
-     "widget": {
-      "name": "kernel_check"
+      "name": "action"
      },
      "link": null
     }
@@ -92,25 +58,22 @@
      ]
     }
    ],
+   "title": "MonarchRT Worker",
    "properties": {
-    "Node name for S&R": "MonarchRTDoctor"
+    "Node name for S&R": "MonarchRTWorker"
    },
    "widgets_values": [
-    "wsl-reference",
-    false,
-    false
+    "status"
    ],
    "widgets_values_named": {
-    "runtime_id": "wsl-reference",
-    "verify_sha256": false,
-    "kernel_check": false
+    "action": "status"
    }
   },
   {
    "id": 2,
    "type": "PreviewAny",
    "pos": [
-    470,
+    540.265234375,
     130
    ],
    "size": [
@@ -156,7 +119,7 @@
      "links": null
     }
    ],
-   "title": "Doctor report",
+   "title": "Worker status",
    "properties": {
     "Node name for S&R": "PreviewAny"
    },
@@ -180,10 +143,10 @@
  "config": {},
  "extra": {
   "ds": {
-   "scale": 1,
+   "scale": 0.7944915254237286,
    "offset": [
-    0,
-    0
+    387.28,
+    67.33333333333337
    ]
   },
   "reroutes": null

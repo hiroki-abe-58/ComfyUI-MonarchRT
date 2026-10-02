@@ -1,8 +1,8 @@
 [project]
 # Comfy Registry node id: immutable once published.
 name = "monarchrt"
-version = "0.1.0"
-description = "Unofficial community integration, not affiliated with the MonarchRT authors: runs training-free MonarchRT attention on the public Self-Forcing (Wan2.1-T2V-1.3B) weights in a separate WSL2/Linux runtime, with a dense baseline for A/B comparison, real VIDEO outputs and dispatch/timing reports."
+version = "0.2.0"
+description = "Unofficial community integration, not affiliated with the MonarchRT authors: runs training-free MonarchRT attention on the public Self-Forcing (Wan2.1-T2V-1.3B) weights in a separate WSL2/Linux runtime, with a dense baseline for A/B comparison, an optional persistent worker that keeps the model and tuned kernels loaded between queue jobs, real VIDEO outputs and dispatch/timing reports."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"

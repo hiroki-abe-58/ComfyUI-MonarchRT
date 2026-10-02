@@ -45,7 +45,10 @@ _RUNTIME_KEYS = {
     "jobs_dir",
     "wsl_mount_root",
     "description",
+    "backend",
+    "worker_idle_seconds",
 }
+BACKENDS = ("one-shot", "persistent")
 
 
 class ConfigError(ValueError):
@@ -67,6 +70,8 @@ class Runtime:
     jobs_dir: str | None = None  # host path; default <ComfyUI temp>/monarchrt
     wsl_mount_root: str = "/mnt/"
     description: str = ""
+    backend: str = "one-shot"  # default when the workflow does not choose; "persistent" keeps a warm worker
+    worker_idle_seconds: int = 300  # a persistent worker exits after this long without a job
 
 
 def _linux_abs_path(value, what: str) -> str:
@@ -111,6 +116,12 @@ def parse_runtime(rid: str, raw) -> Runtime:
     description = raw.get("description", "")
     if not isinstance(description, str):
         raise ConfigError(f"runtime {rid}: description must be a string")
+    backend = raw.get("backend", "one-shot")
+    if backend not in BACKENDS:
+        raise ConfigError(f"runtime {rid}: backend must be one of {BACKENDS}")
+    idle = raw.get("worker_idle_seconds", 300)
+    if not isinstance(idle, int) or isinstance(idle, bool) or not 10 <= idle <= 24 * 3600:
+        raise ConfigError(f"runtime {rid}: worker_idle_seconds must be an integer in 10..86400")
     return Runtime(
         id=rid,
         kind=kind,
@@ -125,6 +136,8 @@ def parse_runtime(rid: str, raw) -> Runtime:
         jobs_dir=jobs_dir,
         wsl_mount_root=mount_root if mount_root.endswith("/") else mount_root + "/",
         description=description[:300],
+        backend=backend,
+        worker_idle_seconds=idle,
     )
 
 

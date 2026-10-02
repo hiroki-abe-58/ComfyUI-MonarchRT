@@ -120,6 +120,11 @@ fill in your paths:
   in CPU memory and is streamed to the GPU for the prompt encoding only;
 - `timeout_minutes`, optional `jobs_dir` (a folder on a local drive; default
   `<ComfyUI temp>/monarchrt`), optional `wsl_mount_root` (default `/mnt/`).
+- `backend` (optional): `persistent` keeps one warm worker process between
+  queue jobs, `one-shot` (the default when the key is missing) starts a
+  process per job. The Runtime node can override it per workflow.
+- `worker_idle_seconds` (optional, 10-86400, default 300): a persistent worker
+  exits after this long without a job and frees its GPU and RAM.
 
 Restart ComfyUI, add **MonarchRT Doctor**, pick the runtime and queue it.
 

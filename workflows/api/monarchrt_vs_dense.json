@@ -2,7 +2,8 @@
  "1": {
   "class_type": "MonarchRTRuntime",
   "inputs": {
-   "runtime_id": "wsl-reference"
+   "runtime_id": "wsl-reference",
+   "backend": "runtime default"
   },
   "_meta": {
    "title": "MonarchRT Runtime"

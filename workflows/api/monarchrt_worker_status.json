@@ -1,0 +1,23 @@
+{
+ "1": {
+  "class_type": "MonarchRTWorker",
+  "inputs": {
+   "action": "status"
+  },
+  "_meta": {
+   "title": "MonarchRT Worker"
+  }
+ },
+ "2": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "1",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Worker status"
+  }
+ }
+}

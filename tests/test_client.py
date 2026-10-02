@@ -185,3 +185,15 @@ def test_load_result_validation(fake_runtime):
             client.load_result(d, job)
     with pytest.raises(client.RuntimeJobError, match="belong"):
         client.load_result(d, {**job, "job_id": "job-other-000000000000"})
+
+
+def test_doctor_upstream_hashes_ignore_line_endings(tmp_path):
+    """A Windows git with core.autocrlf=true checks the pinned upstream out with CRLF; the doctor must accept it."""
+    spec = importlib.util.spec_from_file_location("monarchrt_doctor_under_test", REPO / "runtime" / "monarchrt_doctor.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    lf, crlf = tmp_path / "lf.py", tmp_path / "crlf.py"
+    lf.write_bytes(b"a = 1\nb = 2\n")
+    crlf.write_bytes(b"a = 1\r\nb = 2\r\n")
+    assert mod._sha256_text(lf) == mod._sha256_text(crlf) == hashlib.sha256(b"a = 1\nb = 2\n").hexdigest()
+    assert len(mod.UPSTREAM_FILES) == 11 and all(len(v) == 64 for v in mod.UPSTREAM_FILES.values())

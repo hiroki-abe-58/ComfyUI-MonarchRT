@@ -18,7 +18,9 @@
     "FLASHINFER_WORKSPACE_BASE": "/opt/monarchrt/cache/flashinfer"
    },
    "offload_text_encoder": true,
-   "timeout_minutes": 60
+   "timeout_minutes": 60,
+   "backend": "persistent",
+   "worker_idle_seconds": 300
   },
   "linux-local": {
    "description": "ComfyUI itself runs on Linux; same machine, separate venv",

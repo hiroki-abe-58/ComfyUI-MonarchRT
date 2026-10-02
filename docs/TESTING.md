@@ -35,7 +35,26 @@ Tests that need a ComfyUI checkout are marked `comfy` and fail (not skip) when
 POSIX-only; on Windows hosts that code runs inside WSL, and the tests run on
 the Ubuntu CI leg (and were run in a WSL2 venv locally).
 
+## Persistent worker tests (CPU)
+
+`tests/test_worker.py` runs the real `runtime/monarchrt_worker.py` (frozen into
+a session folder exactly like in production) with a fake engine
+(`tests/fake_runtime/fake_monarchrt_worker.py`) and checks: three queue jobs
+on one worker (same pid, one model load), profile switches without restart,
+restart on identity change (old worker gone), status and unload, the idle
+timeout, cooperative cancel (worker stays), cancel that is not confirmed
+(worker stopped), timeout, a job error (worker stays) vs a CUDA-type error
+(worker replaced), a worker crash (the job fails once and is not retried),
+concurrent jobs serialised, busy / duplicate / foreign-path requests refused,
+an exception from the progress callback (job cancelled), and - on Linux -
+that the worker stops when its parent process dies while idle and while busy.
+
 ## GPU end-to-end (maintainer, real runtime)
+
+`scripts/gpu_e2e_persistent.py` does the same through ComfyUI's HTTP API with
+the real runtime (8+ separate queue jobs, output hashes against one-shot
+references, unload, cancel, worker and ComfyUI crashes, errors, idle timeout,
+memory after every job); see `docs/BENCHMARKS.md#persistent-worker-v020`.
 
 `scripts/gpu_e2e.py` starts its own ComfyUI on a free `127.0.0.1` port and
 uses the HTTP API (`/prompt`, `/history`, `/interrupt`, `/object_info`) with a

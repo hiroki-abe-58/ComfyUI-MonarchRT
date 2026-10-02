@@ -80,7 +80,7 @@ def _orphans(pgid: int, starttime: int | None) -> set[int]:
 
 
 # the runtime scripts this helper may stop, and the request file each one is started with
-SCRIPTS = {"monarchrt_job.py": "job.json", "monarchrt_doctor.py": "request.json"}
+SCRIPTS = {"monarchrt_job.py": "job.json", "monarchrt_doctor.py": "request.json", "monarchrt_worker.py": "worker.json"}
 
 
 def _is_ours(cmd: list[str], job_dir: Path) -> bool:

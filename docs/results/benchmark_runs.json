@@ -1,0 +1,3730 @@
+{
+ "schema": "monarchrt-comfy-run-manifest/1",
+ "upstream": {
+  "repo": "https://github.com/Infini-AI-Lab/MonarchRT",
+  "commit": "34867c041ff7d70c699a9149f84857058d8ada92"
+ },
+ "weights": {
+  "Wan-AI/Wan2.1-T2V-1.3B": "37ec512624d61f7aa208f7ea8140a131f93afc9a",
+  "gdhe17/Self-Forcing checkpoints/self_forcing_dmd.pt": {
+   "revision": "2f8b779212da279d212c22a509b66ad6552f350e",
+   "sha256": "a0413986d9734e02c09504e1520f5697ba6df731bb2f0f35577485e9cc8f56a3",
+   "used": "generator_ema"
+  }
+ },
+ "hardware": {
+  "gpu": "NVIDIA GeForce RTX 5090 32 GB (shared with the Windows desktop)",
+  "driver": "595.95",
+  "host": "Windows 11 + WSL2 Ubuntu 24.04",
+  "wsl_memory_limit_gib": 31
+ },
+ "prompts": {
+  "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1": "A red fox trotting through fresh snow in a quiet pine forest at sunrise, warm golden light filtering between the trees, the camera tracking alongside at ground level.",
+  "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4": "Ocean waves crashing against dark volcanic rocks on a stormy coastline, white spray bursting into the air, overcast sky, cinematic wide shot.",
+  "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778": "A rainy city street at night lit by neon signs, people with umbrellas walking past glowing shop windows, colorful reflections shimmering on the wet pavement."
+ },
+ "jobs": {
+  "ab2_1_dense": {
+   "label": "A dense",
+   "runner_sha256_prefix": "a640d69f555e",
+   "profile": "dense",
+   "offload_text_encoder": true,
+   "effective_config": {
+    "config_file": "self_forcing_dmd.yaml",
+    "monarch_args": {
+     "enable": false
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0,
+    "offload_text_encoder": true
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 27.299,
+   "process_seconds": 175.454,
+   "host_peak_rss_bytes": 20598030336,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 68.129,
+      "text_encode": 57.537,
+      "generator_forwards": 6.901,
+      "vae_decode": 3.196,
+      "other_in_inference": 0.496,
+      "mp4_write": 0.474
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13367550464,
+     "cuda_max_reserved_bytes": 14854127616,
+     "device_used_bytes_after": 16745299968
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.578,
+      "text_encode": 1.807,
+      "generator_forwards": 6.749,
+      "vae_decode": 2.736,
+      "other_in_inference": 0.286,
+      "mp4_write": 0.473
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13760823808,
+     "cuda_max_reserved_bytes": 16955473920,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "898a6ae2ae5d84a729cb5888aa86dd3a643ea6297e9c35c9df1f2a25155a8ee7",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.814,
+      "text_encode": 1.274,
+      "generator_forwards": 6.438,
+      "vae_decode": 2.742,
+      "other_in_inference": 0.359,
+      "mp4_write": 0.43
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "38fc2ed51df52cbe61aa2e7956c6ba46bfdbaeb097ea82bf984788714f8d3c16",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.797,
+      "text_encode": 1.505,
+      "generator_forwards": 6.417,
+      "vae_decode": 2.733,
+      "other_in_inference": 0.142,
+      "mp4_write": 0.39
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761348096,
+     "cuda_max_reserved_bytes": 17051942912,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "37386b5880f08b0831986cbeb2974ce01ab2e96ba47d3f4abcb0e3568b8c273f",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.605,
+      "text_encode": 1.305,
+      "generator_forwards": 6.416,
+      "vae_decode": 2.746,
+      "other_in_inference": 0.138,
+      "mp4_write": 0.415
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "28029ee87c59f29c2c967d99106c44e1e26de45b7847f3d5473c758f3cd6f8d0",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.389,
+      "text_encode": 1.32,
+      "generator_forwards": 7.146,
+      "vae_decode": 2.764,
+      "other_in_inference": 0.158,
+      "mp4_write": 0.527
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761348096,
+     "cuda_max_reserved_bytes": 17051942912,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b2868e472c7ab680f70c6f247ec35f22233c6bd36adcf8fa80d4aed42a429c8e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.715,
+      "text_encode": 1.379,
+      "generator_forwards": 6.428,
+      "vae_decode": 2.762,
+      "other_in_inference": 0.145,
+      "mp4_write": 0.462
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    }
+   ]
+  },
+  "ab2_2_monarch_h2": {
+   "label": "B monarch_h2",
+   "runner_sha256_prefix": "a640d69f555e",
+   "profile": "monarch_h2",
+   "offload_text_encoder": true,
+   "effective_config": {
+    "config_file": "self_forcing_monarch_dmd.yaml",
+    "monarch_args": {
+     "enable": true,
+     "num_iters": 1,
+     "f_tied": 1,
+     "h_reduce": 2,
+     "w_reduce": 1
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0,
+    "offload_text_encoder": true
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 28.694,
+   "process_seconds": 310.256,
+   "host_peak_rss_bytes": 21338730496,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 208.021,
+      "text_encode": 59.35,
+      "generator_forwards": 143.49,
+      "vae_decode": 5.007,
+      "other_in_inference": 0.175,
+      "mp4_write": 0.888
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13364191744,
+     "cuda_max_reserved_bytes": 14459863040,
+     "device_used_bytes_after": 20327235584
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.653,
+      "text_encode": 2.2,
+      "generator_forwards": 5.362,
+      "vae_decode": 2.926,
+      "other_in_inference": 0.166,
+      "mp4_write": 0.483
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761741312,
+     "cuda_max_reserved_bytes": 16561209344,
+     "device_used_bytes_after": 20971061248
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "2f9c9cf4c7d3d4924ff859c2b6eba368a9759b4e3c2c286d53d77e3fc34fcd1e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.331,
+      "text_encode": 1.703,
+      "generator_forwards": 4.718,
+      "vae_decode": 2.764,
+      "other_in_inference": 0.146,
+      "mp4_write": 0.442
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22044803072
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "fc6cdce6fbb7f390e69a71acd1d85ded745f75202449bd6272c55b496de49551",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.419,
+      "text_encode": 1.697,
+      "generator_forwards": 4.815,
+      "vae_decode": 2.767,
+      "other_in_inference": 0.141,
+      "mp4_write": 0.408
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 18278776832,
+     "device_used_bytes_after": 20971061248
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "c73e32c80eab95fada4867e8aa32ad234a76a5cbee63b078591eb279d3c16854",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.053,
+      "text_encode": 1.336,
+      "generator_forwards": 4.826,
+      "vae_decode": 2.757,
+      "other_in_inference": 0.133,
+      "mp4_write": 0.463
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22044803072
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f65f262649b72b3a6513f51e0b0df5ce10ccc6db37782dd3ec0331f9562f3b2a",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.126,
+      "text_encode": 1.372,
+      "generator_forwards": 4.817,
+      "vae_decode": 2.792,
+      "other_in_inference": 0.145,
+      "mp4_write": 0.522
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 18278776832,
+     "device_used_bytes_after": 20971061248
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "021c7e1b257f81c8d927f5a77a854b21bfbbb271de69ffb09d36abf0843a9e1d",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.233,
+      "text_encode": 1.37,
+      "generator_forwards": 4.943,
+      "vae_decode": 2.786,
+      "other_in_inference": 0.134,
+      "mp4_write": 0.53
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22044803072
+    }
+   ]
+  },
+  "ab2_3_dense_again": {
+   "label": "A' dense again (residue check)",
+   "runner_sha256_prefix": "a640d69f555e",
+   "profile": "dense",
+   "offload_text_encoder": true,
+   "effective_config": {
+    "config_file": "self_forcing_dmd.yaml",
+    "monarch_args": {
+     "enable": false
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0,
+    "offload_text_encoder": true
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 35.031,
+   "process_seconds": 186.295,
+   "host_peak_rss_bytes": 20598382592,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 69.38,
+      "text_encode": 58.645,
+      "generator_forwards": 6.538,
+      "vae_decode": 3.22,
+      "other_in_inference": 0.977,
+      "mp4_write": 0.595
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13367550464,
+     "cuda_max_reserved_bytes": 14854127616,
+     "device_used_bytes_after": 16745299968
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.245,
+      "text_encode": 1.869,
+      "generator_forwards": 6.402,
+      "vae_decode": 2.711,
+      "other_in_inference": 0.262,
+      "mp4_write": 0.52
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13760823808,
+     "cuda_max_reserved_bytes": 16955473920,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "898a6ae2ae5d84a729cb5888aa86dd3a643ea6297e9c35c9df1f2a25155a8ee7",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.588,
+      "text_encode": 1.327,
+      "generator_forwards": 6.398,
+      "vae_decode": 2.719,
+      "other_in_inference": 0.143,
+      "mp4_write": 0.437
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "38fc2ed51df52cbe61aa2e7956c6ba46bfdbaeb097ea82bf984788714f8d3c16",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.594,
+      "text_encode": 1.306,
+      "generator_forwards": 6.407,
+      "vae_decode": 2.742,
+      "other_in_inference": 0.14,
+      "mp4_write": 0.379
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761348096,
+     "cuda_max_reserved_bytes": 17051942912,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "37386b5880f08b0831986cbeb2974ce01ab2e96ba47d3f4abcb0e3568b8c273f",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.311,
+      "text_encode": 1.392,
+      "generator_forwards": 6.665,
+      "vae_decode": 3.106,
+      "other_in_inference": 0.149,
+      "mp4_write": 0.424
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "28029ee87c59f29c2c967d99106c44e1e26de45b7847f3d5473c758f3cd6f8d0",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.352,
+      "text_encode": 1.43,
+      "generator_forwards": 6.46,
+      "vae_decode": 3.203,
+      "other_in_inference": 0.259,
+      "mp4_write": 0.52
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761348096,
+     "cuda_max_reserved_bytes": 17051942912,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b2868e472c7ab680f70c6f247ec35f22233c6bd36adcf8fa80d4aed42a429c8e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.211,
+      "text_encode": 1.591,
+      "generator_forwards": 6.587,
+      "vae_decode": 2.76,
+      "other_in_inference": 0.273,
+      "mp4_write": 0.456
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    }
+   ]
+  },
+  "ab2_4_monarch_h1": {
+   "label": "C monarch_h1",
+   "runner_sha256_prefix": "a640d69f555e",
+   "profile": "monarch_h1",
+   "offload_text_encoder": true,
+   "effective_config": {
+    "config_file": "self_forcing_monarch_dmd.yaml",
+    "monarch_args": {
+     "enable": true,
+     "num_iters": 1,
+     "f_tied": 1,
+     "h_reduce": 1,
+     "w_reduce": 1
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0,
+    "offload_text_encoder": true
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 27.871,
+   "process_seconds": 304.061,
+   "host_peak_rss_bytes": 21316145152,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "a5ced0816ffee6f336bdb8a426b58777310aa1dd4c13c85b5cc96aac03eadfb9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 208.238,
+      "text_encode": 57.989,
+      "generator_forwards": 146.276,
+      "vae_decode": 3.798,
+      "other_in_inference": 0.176,
+      "mp4_write": 0.519
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13364191744,
+     "cuda_max_reserved_bytes": 14459863040,
+     "device_used_bytes_after": 20329332736
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "a5ced0816ffee6f336bdb8a426b58777310aa1dd4c13c85b5cc96aac03eadfb9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.032,
+      "text_encode": 1.753,
+      "generator_forwards": 4.159,
+      "vae_decode": 2.768,
+      "other_in_inference": 0.352,
+      "mp4_write": 0.437
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761741312,
+     "cuda_max_reserved_bytes": 16561209344,
+     "device_used_bytes_after": 20973158400
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "551e8ebf0b525101cf5e3fc9953c471f5948626a2dcf30ffefbdf4234f62a2f5",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.803,
+      "text_encode": 1.478,
+      "generator_forwards": 4.07,
+      "vae_decode": 2.763,
+      "other_in_inference": 0.492,
+      "mp4_write": 0.371
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22046900224
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "bb06d1820fe2d62e39d442df5a737602a8027514c98fc56380749cc8ee391e4e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.567,
+      "text_encode": 1.443,
+      "generator_forwards": 4.208,
+      "vae_decode": 2.766,
+      "other_in_inference": 0.151,
+      "mp4_write": 0.389
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 18278776832,
+     "device_used_bytes_after": 20973158400
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b5eb22fbad3946a9ecd76f77869fa84b064f9d4730725bf286c54f0e6bcd0ca6",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.642,
+      "text_encode": 1.557,
+      "generator_forwards": 4.164,
+      "vae_decode": 2.754,
+      "other_in_inference": 0.167,
+      "mp4_write": 0.412
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22046900224
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f00b1e178480c3c04002c40fe4bf83957719283ee1dff69c1c0d19b20d6a2961",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.609,
+      "text_encode": 1.387,
+      "generator_forwards": 4.221,
+      "vae_decode": 2.77,
+      "other_in_inference": 0.231,
+      "mp4_write": 0.394
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 18278776832,
+     "device_used_bytes_after": 20973158400
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b0c6dac7687475a735d183a60d213dee55af438f32c3d25db4e54abd53f41bbc",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.676,
+      "text_encode": 1.444,
+      "generator_forwards": 4.21,
+      "vae_decode": 2.886,
+      "other_in_inference": 0.136,
+      "mp4_write": 0.441
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22046900224
+    }
+   ]
+  },
+  "ab2_5_dense_reverse": {
+   "label": "dense, reverse order (cache reset check)",
+   "runner_sha256_prefix": "9b53771c1ed7",
+   "profile": "dense",
+   "offload_text_encoder": true,
+   "effective_config": {
+    "config_file": "self_forcing_dmd.yaml",
+    "monarch_args": {
+     "enable": false
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0,
+    "offload_text_encoder": true
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 30.931,
+   "process_seconds": 171.474,
+   "host_peak_rss_bytes": 20599701504,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b2868e472c7ab680f70c6f247ec35f22233c6bd36adcf8fa80d4aed42a429c8e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 66.807,
+      "text_encode": 56.978,
+      "generator_forwards": 6.63,
+      "generator_denoise": 5.353,
+      "generator_context": 1.277,
+      "vae_decode": 3.014,
+      "other_in_inference": 0.184,
+      "mp4_write": 0.47
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13367550464,
+     "cuda_max_reserved_bytes": 14854127616,
+     "device_used_bytes_after": 16745299968
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "28029ee87c59f29c2c967d99106c44e1e26de45b7847f3d5473c758f3cd6f8d0",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.768,
+      "text_encode": 2.024,
+      "generator_forwards": 6.495,
+      "generator_denoise": 5.144,
+      "generator_context": 1.351,
+      "vae_decode": 3.093,
+      "other_in_inference": 0.156,
+      "mp4_write": 0.795
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13760823808,
+     "cuda_max_reserved_bytes": 16955473920,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "37386b5880f08b0831986cbeb2974ce01ab2e96ba47d3f4abcb0e3568b8c273f",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 12.891,
+      "text_encode": 2.988,
+      "generator_forwards": 6.695,
+      "generator_denoise": 5.429,
+      "generator_context": 1.266,
+      "vae_decode": 2.864,
+      "other_in_inference": 0.344,
+      "mp4_write": 1.056
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "38fc2ed51df52cbe61aa2e7956c6ba46bfdbaeb097ea82bf984788714f8d3c16",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.97,
+      "text_encode": 1.662,
+      "generator_forwards": 6.405,
+      "generator_denoise": 5.128,
+      "generator_context": 1.277,
+      "vae_decode": 2.756,
+      "other_in_inference": 0.146,
+      "mp4_write": 0.74
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761348096,
+     "cuda_max_reserved_bytes": 17051942912,
+     "device_used_bytes_after": 16994861056
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "898a6ae2ae5d84a729cb5888aa86dd3a643ea6297e9c35c9df1f2a25155a8ee7",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.216,
+      "text_encode": 1.568,
+      "generator_forwards": 6.419,
+      "generator_denoise": 5.139,
+      "generator_context": 1.28,
+      "vae_decode": 2.758,
+      "other_in_inference": 0.472,
+      "mp4_write": 0.427
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 16841768960
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 10.957,
+      "text_encode": 1.599,
+      "generator_forwards": 6.442,
+      "generator_denoise": 5.152,
+      "generator_context": 1.29,
+      "vae_decode": 2.762,
+      "other_in_inference": 0.154,
+      "mp4_write": 0.598
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761348096,
+     "cuda_max_reserved_bytes": 17051942912,
+     "device_used_bytes_after": 16994861056
+    }
+   ]
+  },
+  "ab2_6_monarch_h2_reverse": {
+   "label": "monarch_h2, reverse order (cache reset check)",
+   "runner_sha256_prefix": "9b53771c1ed7",
+   "profile": "monarch_h2",
+   "offload_text_encoder": true,
+   "effective_config": {
+    "config_file": "self_forcing_monarch_dmd.yaml",
+    "monarch_args": {
+     "enable": true,
+     "num_iters": 1,
+     "f_tied": 1,
+     "h_reduce": 2,
+     "w_reduce": 1
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0,
+    "offload_text_encoder": true
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 32.866,
+   "process_seconds": 299.757,
+   "host_peak_rss_bytes": 21245620224,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "021c7e1b257f81c8d927f5a77a854b21bfbbb271de69ffb09d36abf0843a9e1d",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 201.419,
+      "text_encode": 58.627,
+      "generator_forwards": 138.6,
+      "generator_denoise": 137.595,
+      "generator_context": 1.005,
+      "vae_decode": 3.605,
+      "other_in_inference": 0.588,
+      "mp4_write": 0.67
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13364191744,
+     "cuda_max_reserved_bytes": 14459863040,
+     "device_used_bytes_after": 20327235584
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f65f262649b72b3a6513f51e0b0df5ce10ccc6db37782dd3ec0331f9562f3b2a",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 12.083,
+      "text_encode": 4.015,
+      "generator_forwards": 5.146,
+      "generator_denoise": 4.055,
+      "generator_context": 1.091,
+      "vae_decode": 2.767,
+      "other_in_inference": 0.154,
+      "mp4_write": 0.544
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13761741312,
+     "cuda_max_reserved_bytes": 16561209344,
+     "device_used_bytes_after": 20971061248
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "c73e32c80eab95fada4867e8aa32ad234a76a5cbee63b078591eb279d3c16854",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.671,
+      "text_encode": 1.443,
+      "generator_forwards": 5.094,
+      "generator_denoise": 3.967,
+      "generator_context": 1.127,
+      "vae_decode": 2.868,
+      "other_in_inference": 0.267,
+      "mp4_write": 0.459
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22044803072
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "fc6cdce6fbb7f390e69a71acd1d85ded745f75202449bd6272c55b496de49551",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.515,
+      "text_encode": 1.507,
+      "generator_forwards": 5.116,
+      "generator_denoise": 4.149,
+      "generator_context": 0.967,
+      "vae_decode": 2.756,
+      "other_in_inference": 0.135,
+      "mp4_write": 0.405
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 18278776832,
+     "device_used_bytes_after": 20971061248
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "2f9c9cf4c7d3d4924ff859c2b6eba368a9759b4e3c2c286d53d77e3fc34fcd1e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.527,
+      "text_encode": 1.53,
+      "generator_forwards": 5.085,
+      "generator_denoise": 4.018,
+      "generator_context": 1.067,
+      "vae_decode": 2.767,
+      "other_in_inference": 0.145,
+      "mp4_write": 0.461
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 17205035008,
+     "device_used_bytes_after": 22044803072
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.602,
+      "text_encode": 1.786,
+      "generator_forwards": 4.913,
+      "generator_denoise": 3.964,
+      "generator_context": 0.949,
+      "vae_decode": 2.763,
+      "other_in_inference": 0.141,
+      "mp4_write": 0.479
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 13762265600,
+     "cuda_max_reserved_bytes": 18278776832,
+     "device_used_bytes_after": 20971061248
+    }
+   ]
+  },
+  "ab_1_dense": {
+   "label": "no-offload dense (VRAM-saturation observation)",
+   "runner_sha256_prefix": "6f09cac43570",
+   "profile": "dense",
+   "offload_text_encoder": false,
+   "effective_config": {
+    "config_file": "self_forcing_dmd.yaml",
+    "monarch_args": {
+     "enable": false
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 83.337,
+   "process_seconds": 169.023,
+   "host_peak_rss_bytes": 21667237888,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.485,
+      "text_encode": 0.308,
+      "generator_forwards": 6.664,
+      "vae_decode": 3.734,
+      "other_in_inference": 0.779,
+      "mp4_write": 0.509
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 24730731008,
+     "cuda_max_reserved_bytes": 26185039872,
+     "device_used_bytes_after": 30058446848
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.241,
+      "text_encode": 0.058,
+      "generator_forwards": 6.38,
+      "vae_decode": 2.695,
+      "other_in_inference": 0.108,
+      "mp4_write": 0.481
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126461952,
+     "cuda_max_reserved_bytes": 26799505408,
+     "device_used_bytes_after": 30617530368
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "898a6ae2ae5d84a729cb5888aa86dd3a643ea6297e9c35c9df1f2a25155a8ee7",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.312,
+      "text_encode": 0.045,
+      "generator_forwards": 6.434,
+      "vae_decode": 2.72,
+      "other_in_inference": 0.112,
+      "mp4_write": 0.46
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25125134848,
+     "cuda_max_reserved_bytes": 26799505408,
+     "device_used_bytes_after": 30627885056
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "38fc2ed51df52cbe61aa2e7956c6ba46bfdbaeb097ea82bf984788714f8d3c16",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.529,
+      "text_encode": 0.048,
+      "generator_forwards": 6.56,
+      "vae_decode": 2.722,
+      "other_in_inference": 0.2,
+      "mp4_write": 0.404
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25125151232,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31197200384
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "37386b5880f08b0831986cbeb2974ce01ab2e96ba47d3f4abcb0e3568b8c273f",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.555,
+      "text_encode": 0.051,
+      "generator_forwards": 6.491,
+      "vae_decode": 2.901,
+      "other_in_inference": 0.112,
+      "mp4_write": 0.439
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31234093056
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "28029ee87c59f29c2c967d99106c44e1e26de45b7847f3d5473c758f3cd6f8d0",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.577,
+      "text_encode": 0.046,
+      "generator_forwards": 6.586,
+      "vae_decode": 2.841,
+      "other_in_inference": 0.104,
+      "mp4_write": 0.546
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126068736,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31289270272
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b2868e472c7ab680f70c6f247ec35f22233c6bd36adcf8fa80d4aed42a429c8e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.344,
+      "text_encode": 0.047,
+      "generator_forwards": 6.435,
+      "vae_decode": 2.746,
+      "other_in_inference": 0.117,
+      "mp4_write": 0.476
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31215026176
+    }
+   ]
+  },
+  "ab_2_monarch_h2": {
+   "label": "no-offload monarch_h2 (VRAM-saturation observation)",
+   "runner_sha256_prefix": "6f09cac43570",
+   "profile": "monarch_h2",
+   "offload_text_encoder": false,
+   "effective_config": {
+    "config_file": "self_forcing_monarch_dmd.yaml",
+    "monarch_args": {
+     "enable": true,
+     "num_iters": 1,
+     "f_tied": 1,
+     "h_reduce": 2,
+     "w_reduce": 1
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 88.032,
+   "process_seconds": 339.046,
+   "host_peak_rss_bytes": 21674176512,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 150.744,
+      "text_encode": 0.23,
+      "generator_forwards": 146.548,
+      "vae_decode": 3.403,
+      "other_in_inference": 0.564,
+      "mp4_write": 0.579
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 24729977344,
+     "cuda_max_reserved_bytes": 25971130368,
+     "device_used_bytes_after": 33358573568
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f3d25b26221bac38217fff1017cafdcf41639773d59e28289d63227ce94c4bee",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.697,
+      "text_encode": 0.056,
+      "generator_forwards": 4.958,
+      "vae_decode": 4.574,
+      "other_in_inference": 0.109,
+      "mp4_write": 0.518
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25125659136,
+     "cuda_max_reserved_bytes": 26585595904,
+     "device_used_bytes_after": 33857105920
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "2f9c9cf4c7d3d4924ff859c2b6eba368a9759b4e3c2c286d53d77e3fc34fcd1e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 14.794,
+      "text_encode": 0.05,
+      "generator_forwards": 9.174,
+      "vae_decode": 5.345,
+      "other_in_inference": 0.225,
+      "mp4_write": 0.486
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126068736,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "fc6cdce6fbb7f390e69a71acd1d85ded745f75202449bd6272c55b496de49551",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 15.474,
+      "text_encode": 0.045,
+      "generator_forwards": 9.877,
+      "vae_decode": 5.428,
+      "other_in_inference": 0.124,
+      "mp4_write": 0.49
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25128051200,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "c73e32c80eab95fada4867e8aa32ad234a76a5cbee63b078591eb279d3c16854",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 14.359,
+      "text_encode": 0.06,
+      "generator_forwards": 9.183,
+      "vae_decode": 4.979,
+      "other_in_inference": 0.138,
+      "mp4_write": 0.778
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f65f262649b72b3a6513f51e0b0df5ce10ccc6db37782dd3ec0331f9562f3b2a",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 14.834,
+      "text_encode": 0.049,
+      "generator_forwards": 9.578,
+      "vae_decode": 5.09,
+      "other_in_inference": 0.117,
+      "mp4_write": 0.614
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25127100928,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "021c7e1b257f81c8d927f5a77a854b21bfbbb271de69ffb09d36abf0843a9e1d",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 15.04,
+      "text_encode": 0.072,
+      "generator_forwards": 9.454,
+      "vae_decode": 5.384,
+      "other_in_inference": 0.13,
+      "mp4_write": 0.619
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    }
+   ]
+  },
+  "ab_3_dense_again": {
+   "label": "no-offload dense again",
+   "runner_sha256_prefix": "6f09cac43570",
+   "profile": "dense",
+   "offload_text_encoder": false,
+   "effective_config": {
+    "config_file": "self_forcing_dmd.yaml",
+    "monarch_args": {
+     "enable": false
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 83.827,
+   "process_seconds": 166.787,
+   "host_peak_rss_bytes": 21674209280,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 11.56,
+      "text_encode": 0.219,
+      "generator_forwards": 6.511,
+      "vae_decode": 4.01,
+      "other_in_inference": 0.82,
+      "mp4_write": 0.488
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 24730731008,
+     "cuda_max_reserved_bytes": 26185039872,
+     "device_used_bytes_after": 29929996288
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "e2a3150d205bf03fe88451d55c7a7a18701db79cf079ce9c67d051b5748ebbd9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.3,
+      "text_encode": 0.049,
+      "generator_forwards": 6.411,
+      "vae_decode": 2.73,
+      "other_in_inference": 0.11,
+      "mp4_write": 0.484
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126461952,
+     "cuda_max_reserved_bytes": 26799505408,
+     "device_used_bytes_after": 30572048384
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "898a6ae2ae5d84a729cb5888aa86dd3a643ea6297e9c35c9df1f2a25155a8ee7",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.308,
+      "text_encode": 0.047,
+      "generator_forwards": 6.407,
+      "vae_decode": 2.739,
+      "other_in_inference": 0.115,
+      "mp4_write": 0.444
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25125134848,
+     "cuda_max_reserved_bytes": 26799505408,
+     "device_used_bytes_after": 30546034688
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "38fc2ed51df52cbe61aa2e7956c6ba46bfdbaeb097ea82bf984788714f8d3c16",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.38,
+      "text_encode": 0.061,
+      "generator_forwards": 6.407,
+      "vae_decode": 2.743,
+      "other_in_inference": 0.17,
+      "mp4_write": 0.381
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25125151232,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31203995648
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "37386b5880f08b0831986cbeb2974ce01ab2e96ba47d3f4abcb0e3568b8c273f",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.31,
+      "text_encode": 0.051,
+      "generator_forwards": 6.408,
+      "vae_decode": 2.744,
+      "other_in_inference": 0.107,
+      "mp4_write": 0.416
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31196082176
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "28029ee87c59f29c2c967d99106c44e1e26de45b7847f3d5473c758f3cd6f8d0",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.35,
+      "text_encode": 0.046,
+      "generator_forwards": 6.422,
+      "vae_decode": 2.767,
+      "other_in_inference": 0.115,
+      "mp4_write": 0.574
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126068736,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31191494656
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b2868e472c7ab680f70c6f247ec35f22233c6bd36adcf8fa80d4aed42a429c8e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 9.491,
+      "text_encode": 0.046,
+      "generator_forwards": 6.461,
+      "vae_decode": 2.762,
+      "other_in_inference": 0.222,
+      "mp4_write": 0.45
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27413970944,
+     "device_used_bytes_after": 31151849472
+    }
+   ]
+  },
+  "ab_4_monarch_h1": {
+   "label": "no-offload monarch_h1",
+   "runner_sha256_prefix": "6f09cac43570",
+   "profile": "monarch_h1",
+   "offload_text_encoder": false,
+   "effective_config": {
+    "config_file": "self_forcing_monarch_dmd.yaml",
+    "monarch_args": {
+     "enable": true,
+     "num_iters": 1,
+     "f_tied": 1,
+     "h_reduce": 1,
+     "w_reduce": 1
+    },
+    "denoising_step_list": [
+     1000,
+     750,
+     500,
+     250
+    ],
+    "warp_denoising_step": true,
+    "num_frame_per_block": 3,
+    "context_noise": 0,
+    "timestep_shift": 5.0
+   },
+   "weights_check": {
+    "checkpoint_bytes": 5676252553,
+    "ema_tensors": 825,
+    "generator_tensors": 825,
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "probe_tensor": "model.blocks.0.self_attn.q.weight",
+    "probe_changed_from_base": true,
+    "probe_equals_ema": true
+   },
+   "versions": {
+    "python": "3.10.22",
+    "torch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "triton": "3.4.0",
+    "device": "NVIDIA GeForce RTX 5090",
+    "capability": "12.0",
+    "flashinfer": "0.6.3",
+    "flash_attn": "2.8.3"
+   },
+   "model_load_seconds": 88.842,
+   "process_seconds": 684.96,
+   "host_peak_rss_bytes": 21674196992,
+   "videos": [
+    {
+     "index": 0,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "a5ced0816ffee6f336bdb8a426b58777310aa1dd4c13c85b5cc96aac03eadfb9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 533.904,
+      "text_encode": 0.698,
+      "generator_forwards": 527.15,
+      "vae_decode": 4.171,
+      "other_in_inference": 1.885,
+      "mp4_write": 0.465
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 24729977344,
+     "cuda_max_reserved_bytes": 25971130368,
+     "device_used_bytes_after": 33344094208
+    },
+    {
+     "index": 1,
+     "seed": 101,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "a5ced0816ffee6f336bdb8a426b58777310aa1dd4c13c85b5cc96aac03eadfb9",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.525,
+      "text_encode": 0.047,
+      "generator_forwards": 4.697,
+      "vae_decode": 3.627,
+      "other_in_inference": 0.153,
+      "mp4_write": 0.416
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25125659136,
+     "cuda_max_reserved_bytes": 26585595904,
+     "device_used_bytes_after": 33699819520
+    },
+    {
+     "index": 2,
+     "seed": 2026,
+     "prompt_sha256": "d5286c3e66599a9b77e039f5ec95901b18f8fdf67a90bc8701cbf782d5d5bfb1",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "551e8ebf0b525101cf5e3fc9953c471f5948626a2dcf30ffefbdf4234f62a2f5",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 7.937,
+      "text_encode": 0.052,
+      "generator_forwards": 4.129,
+      "vae_decode": 3.645,
+      "other_in_inference": 0.111,
+      "mp4_write": 0.378
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126068736,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 3,
+     "seed": 101,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "bb06d1820fe2d62e39d442df5a737602a8027514c98fc56380749cc8ee391e4e",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 7.361,
+      "text_encode": 0.046,
+      "generator_forwards": 4.333,
+      "vae_decode": 2.856,
+      "other_in_inference": 0.126,
+      "mp4_write": 0.397
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25128051200,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 4,
+     "seed": 2026,
+     "prompt_sha256": "5c88a51523d22b77fae4d07858dfc8af88884efe75122293167908ef72e2faa4",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b5eb22fbad3946a9ecd76f77869fa84b064f9d4730725bf286c54f0e6bcd0ca6",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 7.975,
+      "text_encode": 0.051,
+      "generator_forwards": 4.894,
+      "vae_decode": 2.877,
+      "other_in_inference": 0.152,
+      "mp4_write": 0.403
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 5,
+     "seed": 101,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "569ec5173869737e4c54e83cf0cc80e8db77c43cf3e5360b648083aa6333dbd2",
+     "sha256": "f00b1e178480c3c04002c40fe4bf83957719283ee1dff69c1c0d19b20d6a2961",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 7.261,
+      "text_encode": 0.047,
+      "generator_forwards": 4.241,
+      "vae_decode": 2.86,
+      "other_in_inference": 0.114,
+      "mp4_write": 0.406
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25127100928,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    },
+    {
+     "index": 6,
+     "seed": 2026,
+     "prompt_sha256": "65c4a0d40b25f96c359395ba6b1c638b535b51330a672d02cb05d3df155fa778",
+     "initial_noise_sha256": "a2f64138f7b49f2eec46b51fa3e6274f1ca78387f93b1bbae5830a7d63fb817a",
+     "sha256": "b0c6dac7687475a735d183a60d213dee55af438f32c3d25db4e54abd53f41bbc",
+     "latent_frames": 21,
+     "rgb_frames": 81,
+     "width": 832,
+     "height": 480,
+     "fps": 16,
+     "seconds": {
+      "inference_total": 8.622,
+      "text_encode": 0.046,
+      "generator_forwards": 5.44,
+      "vae_decode": 2.895,
+      "other_in_inference": 0.24,
+      "mp4_write": 0.443
+     },
+     "generator_forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "attention_dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "cuda_max_allocated_bytes": 25126052352,
+     "cuda_max_reserved_bytes": 27200061440,
+     "device_used_bytes_after": 34190458880
+    }
+   ]
+  }
+ },
+ "analysis": {
+  "ab_summary.json": {
+   "decode": {
+    "dense/00": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 3201712,
+     "ok": true
+    },
+    "dense/01": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 3201712,
+     "ok": true
+    },
+    "dense/02": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2574826,
+     "ok": true
+    },
+    "dense/03": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1470949,
+     "ok": true
+    },
+    "dense/04": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1877546,
+     "ok": true
+    },
+    "dense/05": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2704052,
+     "ok": true
+    },
+    "dense/06": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2263561,
+     "ok": true
+    },
+    "monarch_h2/00": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2859932,
+     "ok": true
+    },
+    "monarch_h2/01": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2859932,
+     "ok": true
+    },
+    "monarch_h2/02": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2391935,
+     "ok": true
+    },
+    "monarch_h2/03": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1799462,
+     "ok": true
+    },
+    "monarch_h2/04": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2093527,
+     "ok": true
+    },
+    "monarch_h2/05": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 3250378,
+     "ok": true
+    },
+    "monarch_h2/06": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 3172602,
+     "ok": true
+    },
+    "dense_again/00": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 3201712,
+     "ok": true
+    },
+    "dense_again/01": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 3201712,
+     "ok": true
+    },
+    "dense_again/02": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2574826,
+     "ok": true
+    },
+    "dense_again/03": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1470949,
+     "ok": true
+    },
+    "dense_again/04": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1877546,
+     "ok": true
+    },
+    "dense_again/05": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2704052,
+     "ok": true
+    },
+    "dense_again/06": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2263561,
+     "ok": true
+    },
+    "monarch_h1/00": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2506323,
+     "ok": true
+    },
+    "monarch_h1/01": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2506323,
+     "ok": true
+    },
+    "monarch_h1/02": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2038777,
+     "ok": true
+    },
+    "monarch_h1/03": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1573110,
+     "ok": true
+    },
+    "monarch_h1/04": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 1652402,
+     "ok": true
+    },
+    "monarch_h1/05": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2010349,
+     "ok": true
+    },
+    "monarch_h1/06": {
+     "codec": "h264",
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "pix_fmt": "yuv420p",
+     "decoded_frames": 81,
+     "bytes": 2017138,
+     "ok": true
+    }
+   },
+   "jobs": {
+    "dense": {
+     "profile": "dense",
+     "monarch_args": {
+      "enable": false
+     },
+     "model_load_s": 27.299,
+     "first_video": {
+      "inference_total": 68.129,
+      "text_encode": 57.537,
+      "generator_forwards": 6.901,
+      "vae_decode": 3.196,
+      "other_in_inference": 0.496,
+      "mp4_write": 0.474
+     },
+     "warm_n": 6,
+     "warm_generator_s": {
+      "mean": 6.599,
+      "min": 6.416,
+      "max": 7.146,
+      "stdev": 0.2718712930781769
+     },
+     "warm_inference_total_s": {
+      "mean": 10.983,
+      "min": 10.605,
+      "max": 11.578
+     },
+     "warm_vae_decode_s": {
+      "mean": 2.7471666666666668,
+      "min": 2.733,
+      "max": 2.764
+     },
+     "warm_text_encode_s_mean": 1.4316666666666666,
+     "generator_frames_per_s_mean": 12.294477829406212,
+     "end_to_end_frames_per_s_mean": 7.382988273493964,
+     "dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "cuda_max_allocated_gib": 12.817108631134033,
+     "cuda_max_reserved_gib": 16.0234375,
+     "nvidia_smi_max_used_mib_whole_gpu": 19140,
+     "nvidia_smi_min_used_mib_whole_gpu": 2112,
+     "host_peak_rss_gib": 19.18341064453125,
+     "versions": {
+      "python": "3.10.22",
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "triton": "3.4.0",
+      "device": "NVIDIA GeForce RTX 5090",
+      "capability": "12.0",
+      "flashinfer": "0.6.3",
+      "flash_attn": "2.8.3"
+     }
+    },
+    "monarch_h2": {
+     "profile": "monarch_h2",
+     "monarch_args": {
+      "enable": true,
+      "num_iters": 1,
+      "f_tied": 1,
+      "h_reduce": 2,
+      "w_reduce": 1
+     },
+     "model_load_s": 28.694,
+     "first_video": {
+      "inference_total": 208.021,
+      "text_encode": 59.35,
+      "generator_forwards": 143.49,
+      "vae_decode": 5.007,
+      "other_in_inference": 0.175,
+      "mp4_write": 0.888
+     },
+     "warm_n": 6,
+     "warm_generator_s": {
+      "mean": 4.9135,
+      "min": 4.718,
+      "max": 5.362,
+      "stdev": 0.21091605755212983
+     },
+     "warm_inference_total_s": {
+      "mean": 9.469166666666666,
+      "min": 9.053,
+      "max": 10.653
+     },
+     "warm_vae_decode_s": {
+      "mean": 2.7986666666666666,
+      "min": 2.757,
+      "max": 2.926
+     },
+     "warm_text_encode_s_mean": 1.613,
+     "generator_frames_per_s_mean": 16.513894383505487,
+     "end_to_end_frames_per_s_mean": 8.579967071963184,
+     "dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "cuda_max_allocated_gib": 12.817108631134033,
+     "cuda_max_reserved_gib": 17.0234375,
+     "nvidia_smi_max_used_mib_whole_gpu": 22318,
+     "nvidia_smi_min_used_mib_whole_gpu": 2113,
+     "host_peak_rss_gib": 19.873241424560547,
+     "versions": {
+      "python": "3.10.22",
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "triton": "3.4.0",
+      "device": "NVIDIA GeForce RTX 5090",
+      "capability": "12.0",
+      "flashinfer": "0.6.3",
+      "flash_attn": "2.8.3"
+     }
+    },
+    "dense_again": {
+     "profile": "dense",
+     "monarch_args": {
+      "enable": false
+     },
+     "model_load_s": 35.031,
+     "first_video": {
+      "inference_total": 69.38,
+      "text_encode": 58.645,
+      "generator_forwards": 6.538,
+      "vae_decode": 3.22,
+      "other_in_inference": 0.977,
+      "mp4_write": 0.595
+     },
+     "warm_n": 6,
+     "warm_generator_s": {
+      "mean": 6.4864999999999995,
+      "min": 6.398,
+      "max": 6.665,
+      "stdev": 0.10324525816391439
+     },
+     "warm_inference_total_s": {
+      "mean": 11.050166666666666,
+      "min": 10.588,
+      "max": 11.352
+     },
+     "warm_vae_decode_s": {
+      "mean": 2.8735,
+      "min": 2.711,
+      "max": 3.203
+     },
+     "warm_text_encode_s_mean": 1.4858333333333333,
+     "generator_frames_per_s_mean": 12.490601884573115,
+     "end_to_end_frames_per_s_mean": 7.3367887696464,
+     "dispatch": {
+      "monarch_kv_calls": 0,
+      "monarch_triton_calls": 0,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 1050,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "cuda_max_allocated_gib": 12.817108631134033,
+     "cuda_max_reserved_gib": 16.0234375,
+     "nvidia_smi_max_used_mib_whole_gpu": 19140,
+     "nvidia_smi_min_used_mib_whole_gpu": 2113,
+     "host_peak_rss_gib": 19.183738708496094,
+     "versions": {
+      "python": "3.10.22",
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "triton": "3.4.0",
+      "device": "NVIDIA GeForce RTX 5090",
+      "capability": "12.0",
+      "flashinfer": "0.6.3",
+      "flash_attn": "2.8.3"
+     }
+    },
+    "monarch_h1": {
+     "profile": "monarch_h1",
+     "monarch_args": {
+      "enable": true,
+      "num_iters": 1,
+      "f_tied": 1,
+      "h_reduce": 1,
+      "w_reduce": 1
+     },
+     "model_load_s": 27.871,
+     "first_video": {
+      "inference_total": 208.238,
+      "text_encode": 57.989,
+      "generator_forwards": 146.276,
+      "vae_decode": 3.798,
+      "other_in_inference": 0.176,
+      "mp4_write": 0.519
+     },
+     "warm_n": 6,
+     "warm_generator_s": {
+      "mean": 4.172,
+      "min": 4.07,
+      "max": 4.221,
+      "stdev": 0.05128027561028374
+     },
+     "warm_inference_total_s": {
+      "mean": 8.7215,
+      "min": 8.567,
+      "max": 9.032
+     },
+     "warm_vae_decode_s": {
+      "mean": 2.7845,
+      "min": 2.754,
+      "max": 2.886
+     },
+     "warm_text_encode_s_mean": 1.5103333333333333,
+     "generator_frames_per_s_mean": 19.418120813839256,
+     "end_to_end_frames_per_s_mean": 9.290349205654065,
+     "dispatch": {
+      "monarch_kv_calls": 1050,
+      "monarch_triton_calls": 1050,
+      "monarch_torch_slow_calls": 0,
+      "monarch_no_cache_calls": 0,
+      "dense_self_attn_calls": 0,
+      "flex_attn_calls": 0,
+      "cross_attn_calls": 1050
+     },
+     "forwards": {
+      "denoise": 28,
+      "context": 7
+     },
+     "cuda_max_allocated_gib": 12.817108631134033,
+     "cuda_max_reserved_gib": 17.0234375,
+     "nvidia_smi_max_used_mib_whole_gpu": 22320,
+     "nvidia_smi_min_used_mib_whole_gpu": 2113,
+     "host_peak_rss_gib": 19.85220718383789,
+     "versions": {
+      "python": "3.10.22",
+      "torch": "2.8.0+cu128",
+      "cuda": "12.8",
+      "triton": "3.4.0",
+      "device": "NVIDIA GeForce RTX 5090",
+      "capability": "12.0",
+      "flashinfer": "0.6.3",
+      "flash_attn": "2.8.3"
+     }
+    }
+   },
+   "identity": {
+    "dense_vs_dense_again_identical_files": true,
+    "dense_vs_dense_again_max_abs_pixel_diff": 0,
+    "dense_warmup_equals_repeat": true,
+    "dense_same_initial_noise_as_dense": true,
+    "monarch_h2_warmup_equals_repeat": true,
+    "monarch_h2_same_initial_noise_as_dense": true,
+    "dense_again_warmup_equals_repeat": true,
+    "dense_again_same_initial_noise_as_dense": true,
+    "monarch_h1_warmup_equals_repeat": true,
+    "monarch_h1_same_initial_noise_as_dense": true
+   },
+   "fidelity_vs_dense": {
+    "monarch_h2": {
+     "per_video": [
+      {
+       "index": 1,
+       "psnr_db": 12.825849899627752,
+       "ssim_luma": 0.3561263382434845,
+       "mean_abs_diff": 41.175127642499604
+      },
+      {
+       "index": 2,
+       "psnr_db": 12.427348399495413,
+       "ssim_luma": 0.4067871570587158,
+       "mean_abs_diff": 42.09006840986731
+      },
+      {
+       "index": 3,
+       "psnr_db": 14.117473802534077,
+       "ssim_luma": 0.6014106273651123,
+       "mean_abs_diff": 27.171681377446713
+      },
+      {
+       "index": 4,
+       "psnr_db": 14.892649409820544,
+       "ssim_luma": 0.589471161365509,
+       "mean_abs_diff": 27.292775096533052
+      },
+      {
+       "index": 5,
+       "psnr_db": 10.826751713411298,
+       "ssim_luma": 0.24012407660484314,
+       "mean_abs_diff": 51.624727135433155
+      },
+      {
+       "index": 6,
+       "psnr_db": 12.064875905527444,
+       "ssim_luma": 0.293145090341568,
+       "mean_abs_diff": 41.88075660769165
+      }
+     ],
+     "psnr_mean": 12.859158188402755,
+     "ssim_mean": 0.41451074182987213
+    },
+    "monarch_h1": {
+     "per_video": [
+      {
+       "index": 1,
+       "psnr_db": 10.48223998924756,
+       "ssim_luma": 0.31240683794021606,
+       "mean_abs_diff": 55.114111796982165
+      },
+      {
+       "index": 2,
+       "psnr_db": 11.495555105846261,
+       "ssim_luma": 0.35212835669517517,
+       "mean_abs_diff": 47.71084673749604
+      },
+      {
+       "index": 3,
+       "psnr_db": 11.283539809619185,
+       "ssim_luma": 0.4713594913482666,
+       "mean_abs_diff": 42.188951623008336
+      },
+      {
+       "index": 4,
+       "psnr_db": 9.15300385851298,
+       "ssim_luma": 0.35700151324272156,
+       "mean_abs_diff": 65.17496530456961
+      },
+      {
+       "index": 5,
+       "psnr_db": 10.013173478538924,
+       "ssim_luma": 0.17667828500270844,
+       "mean_abs_diff": 57.717423927666985
+      },
+      {
+       "index": 6,
+       "psnr_db": 10.301472397136767,
+       "ssim_luma": 0.20488624274730682,
+       "mean_abs_diff": 54.28012376386581
+      }
+     ],
+     "psnr_mean": 10.45483077315028,
+     "ssim_mean": 0.3124101211627324
+    },
+    "dense_again": {
+     "per_video": [
+      {
+       "index": 1,
+       "psnr_db": Infinity,
+       "ssim_luma": 1.0,
+       "mean_abs_diff": 0.0
+      },
+      {
+       "index": 2,
+       "psnr_db": Infinity,
+       "ssim_luma": 1.0,
+       "mean_abs_diff": 0.0
+      },
+      {
+       "index": 3,
+       "psnr_db": Infinity,
+       "ssim_luma": 1.0,
+       "mean_abs_diff": 0.0
+      },
+      {
+       "index": 4,
+       "psnr_db": Infinity,
+       "ssim_luma": 1.0,
+       "mean_abs_diff": 0.0
+      },
+      {
+       "index": 5,
+       "psnr_db": Infinity,
+       "ssim_luma": 1.0,
+       "mean_abs_diff": 0.0
+      },
+      {
+       "index": 6,
+       "psnr_db": Infinity,
+       "ssim_luma": 1.0,
+       "mean_abs_diff": 0.0
+      }
+     ],
+     "psnr_mean": Infinity,
+     "ssim_mean": 1.0
+    }
+   },
+   "temporal": {
+    "dense": {
+     "mean_abs_frame_to_frame_diff": 7.201471667167469,
+     "per_video": [
+      11.622028996394231,
+      10.776359174679488,
+      3.1985939378004806,
+      3.577031500400641,
+      8.419330752120059,
+      5.615485641609909
+     ]
+    },
+    "monarch_h2": {
+     "mean_abs_frame_to_frame_diff": 6.7633133030209445,
+     "per_video": [
+      10.569251406416933,
+      6.312712287576789,
+      3.0155931991185896,
+      3.216546432625534,
+      9.870632918920272,
+      7.595143573467548
+     ]
+    },
+    "dense_again": {
+     "mean_abs_frame_to_frame_diff": 7.201471667167469,
+     "per_video": [
+      11.622028996394231,
+      10.776359174679488,
+      3.1985939378004806,
+      3.577031500400641,
+      8.419330752120059,
+      5.615485641609909
+     ]
+    },
+    "monarch_h1": {
+     "mean_abs_frame_to_frame_diff": 5.4176193332943825,
+     "per_video": [
+      9.981942618606437,
+      6.998370736929086,
+      4.124613944811698,
+      3.5564078254373666,
+      3.627703356620593,
+      4.216677517361111
+     ]
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,185 @@
+{
+ "port": 63316,
+ "steps": {
+  "generate": {
+   "status": "success",
+   "wall_s": 269.3,
+   "saved": [
+    "monarch_h2_00001_.mp4",
+    "monarch_h2_00002_.mp4"
+   ],
+   "decoded": [
+    {
+     "frames": 81,
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "codec": "h264"
+    },
+    {
+     "frames": 81,
+     "width": 832,
+     "height": 480,
+     "rate": 16.0,
+     "codec": "h264"
+    }
+   ],
+   "decode_ok": true,
+   "dispatch_ok": true,
+   "report_excerpt": {
+    "profile": "monarch_h2",
+    "training_free": true,
+    "model_load_seconds": 29.149,
+    "wall_seconds": 266.92
+   },
+   "per_video_seconds": [
+    {
+     "inference_total": 210.943,
+     "text_encode": 59.083,
+     "generator_forwards": 148.123,
+     "generator_denoise": 147.175,
+     "generator_context": 0.948,
+     "vae_decode": 3.181,
+     "other_in_inference": 0.555,
+     "mp4_write": 0.693
+    },
+    {
+     "inference_total": 10.525,
+     "text_encode": 2.479,
+     "generator_forwards": 5.083,
+     "generator_denoise": 3.971,
+     "generator_context": 1.112,
+     "vae_decode": 2.774,
+     "other_in_inference": 0.189,
+     "mp4_write": 1.246
+    }
+   ]
+  },
+  "doctor": {
+   "status": "success",
+   "overall": "ok",
+   "checks": [
+    [
+     "upstream_commit",
+     "ok"
+    ],
+    [
+     "upstream_files",
+     "ok"
+    ],
+    [
+     "model_files",
+     "ok"
+    ],
+    [
+     "cuda",
+     "ok"
+    ],
+    [
+     "import:triton",
+     "ok"
+    ],
+    [
+     "import:flash_attn",
+     "ok"
+    ],
+    [
+     "import:flashinfer",
+     "ok"
+    ],
+    [
+     "import:diffusers",
+     "ok"
+    ],
+    [
+     "import:transformers",
+     "ok"
+    ],
+    [
+     "import:omegaconf",
+     "ok"
+    ],
+    [
+     "import:av",
+     "ok"
+    ],
+    [
+     "import:einops",
+     "ok"
+    ],
+    [
+     "triton_kernel",
+     "ok"
+    ],
+    [
+     "monarch_kernel",
+     "ok"
+    ]
+   ]
+  },
+  "cancel": {
+   "status": "error",
+   "messages": [
+    "execution_interrupted"
+   ],
+   "error_excerpt": null,
+   "wall_s": 111.3,
+   "job_dir": "job-20261002-214949-6462064000e4",
+   "stop_report": {
+    "job_dir_name": "job-20261002-214949-6462064000e4",
+    "status": "not_running"
+   },
+   "leftover_processes": [],
+   "gpu_used_mib_after": 2104,
+   "gpu_back_to_idle": true,
+   "expected": "interrupted"
+  },
+  "timeout": {
+   "status": "error",
+   "messages": [
+    "execution_error"
+   ],
+   "error_excerpt": "runtime job exceeded 60 s\n",
+   "wall_s": 68.1,
+   "job_dir": "job-20261002-215140-6f76d3888d48",
+   "stop_report": {
+    "job_dir_name": "job-20261002-215140-6f76d3888d48",
+    "status": "not_running"
+   },
+   "leftover_processes": [],
+   "gpu_used_mib_after": 2105,
+   "gpu_back_to_idle": true,
+   "expected": "error"
+  },
+  "error": {
+   "status": "error",
+   "messages": [
+    "execution_error"
+   ],
+   "error_excerpt": "runtime job failed (exit 3): FileNotFoundError: checkpoint not found\n",
+   "wall_s": 8.1,
+   "job_dir": "job-20261002-215248-f58a9bac0c43",
+   "stop_report": {
+    "job_dir_name": "job-20261002-215248-f58a9bac0c43",
+    "status": "not_running"
+   },
+   "leftover_processes": [],
+   "gpu_used_mib_after": 2105,
+   "gpu_back_to_idle": true,
+   "expected": "error"
+  }
+ },
+ "gpu_idle_mib_before": 2103,
+ "nodes_registered": {
+  "MonarchRTRuntime": true,
+  "MonarchRTGenerate": true,
+  "MonarchRTDoctor": true
+ },
+ "runtime_choices": [
+  "e2e-missing-checkpoint",
+  "e2e-timeout",
+  "wsl-venv28"
+ ],
+ "comfyui_stopped": true,
+ "gpu_idle_mib_after": 2105
+}

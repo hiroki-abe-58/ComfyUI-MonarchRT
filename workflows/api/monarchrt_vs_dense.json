@@ -1,0 +1,97 @@
+{
+ "1": {
+  "class_type": "MonarchRTRuntime",
+  "inputs": {
+   "runtime_id": "wsl-reference"
+  },
+  "_meta": {
+   "title": "MonarchRT Runtime"
+  }
+ },
+ "2": {
+  "class_type": "MonarchRTGenerate",
+  "inputs": {
+   "runtime": [
+    "1",
+    0
+   ],
+   "prompt": "A red fox trotting through fresh snow in a quiet pine forest at sunrise, warm golden light filtering between the trees, the camera tracking alongside at ground level.",
+   "seed": 101,
+   "attention": "monarch_h2",
+   "videos": 1
+  },
+  "_meta": {
+   "title": "MonarchRT (training-free, h_reduce=2)"
+  }
+ },
+ "3": {
+  "class_type": "MonarchRTGenerate",
+  "inputs": {
+   "runtime": [
+    "1",
+    0
+   ],
+   "prompt": "A red fox trotting through fresh snow in a quiet pine forest at sunrise, warm golden light filtering between the trees, the camera tracking alongside at ground level.",
+   "seed": 101,
+   "attention": "dense",
+   "videos": 1
+  },
+  "_meta": {
+   "title": "Dense baseline (same weights, prompt, seed)"
+  }
+ },
+ "4": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "video": [
+    "2",
+    0
+   ],
+   "filename_prefix": "monarchrt/monarch_h2",
+   "format": "mp4",
+   "format.codec": "h264"
+  },
+  "_meta": {
+   "title": "Save MonarchRT video"
+  }
+ },
+ "5": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "video": [
+    "3",
+    0
+   ],
+   "filename_prefix": "monarchrt/dense",
+   "format": "mp4",
+   "format.codec": "h264"
+  },
+  "_meta": {
+   "title": "Save dense video"
+  }
+ },
+ "6": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "2",
+    1
+   ]
+  },
+  "_meta": {
+   "title": "MonarchRT report"
+  }
+ },
+ "7": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "3",
+    1
+   ]
+  },
+  "_meta": {
+   "title": "Dense report"
+  }
+ }
+}

@@ -1,0 +1,13 @@
+ComfyUI-MonarchRT
+Copyright 2026 hiroki-abe-58
+
+This product is an unofficial community integration. It is not affiliated
+with or endorsed by the MonarchRT authors, Carnegie Mellon University, the
+Self-Forcing or CausVid authors, Alibaba (Wan), Hugging Face or Comfy Org.
+
+This repository contains no upstream source code and no model weights. At run
+time it imports an unmodified checkout of Infini-AI-Lab/MonarchRT (Apache
+License 2.0) that the administrator installs separately, and the runtime
+loads Wan-AI/Wan2.1-T2V-1.3B and gdhe17/Self-Forcing weights (both published
+under Apache License 2.0) downloaded by the administrator. See
+docs/LICENSING.md.

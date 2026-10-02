@@ -1,0 +1,25 @@
+{
+ "1": {
+  "class_type": "MonarchRTDoctor",
+  "inputs": {
+   "runtime_id": "wsl-reference",
+   "verify_sha256": false,
+   "kernel_check": false
+  },
+  "_meta": {
+   "title": "MonarchRT Doctor"
+  }
+ },
+ "2": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "1",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Doctor report"
+  }
+ }
+}

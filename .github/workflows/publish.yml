@@ -1,0 +1,129 @@
+name: Publish to Comfy Registry
+
+# Official trigger pattern (docs.comfy.org/registry/publishing): publish when
+# pyproject.toml changes on main, or manually. Extra guards: never from forks
+# or pull requests, only after the regular CI is green for the same commit,
+# never for a version that is already in the registry, and only when the
+# repository has a REGISTRY_ACCESS_TOKEN secret (otherwise the run ends with a
+# notice instead of failing).
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "pyproject.toml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: comfy-registry-publish
+  cancel-in-progress: false
+
+jobs:
+  quality-gate:
+    name: Validate and pack
+    if: github.repository == 'hiroki-abe-58/ComfyUI-MonarchRT' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      token_set: ${{ steps.token.outputs.token_set }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Registry token configured?
+        id: token
+        env:
+          TOKEN_SET: ${{ secrets.REGISTRY_ACCESS_TOKEN != '' }}
+        run: |
+          echo "token_set=${TOKEN_SET}" >> "$GITHUB_OUTPUT"
+          if [ "$TOKEN_SET" != "true" ]; then echo "::notice::REGISTRY_ACCESS_TOKEN is not set; validation runs, publishing is skipped"; fi
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install comfy-cli
+        run: python -m pip install comfy-cli==1.22.0 ruff==0.16.10
+
+      - name: Read node id and version
+        id: meta
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import tomllib
+          p = tomllib.load(open("pyproject.toml", "rb"))["project"]
+          print(f"node_id={p['name']}")
+          print(f"version={p['version']}")
+          PY
+
+      - name: Refuse an already-published version
+        env:
+          NODE_ID: ${{ steps.meta.outputs.node_id }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://api.comfy.org/nodes/${NODE_ID}/versions/${VERSION}")
+          echo "registry lookup ${NODE_ID}@${VERSION}: HTTP ${code}"
+          if [ "$code" = "200" ]; then echo "::error::${NODE_ID} ${VERSION} is already published; bump [project].version"; exit 1; fi
+          if [ "$code" != "404" ]; then echo "::error::unexpected registry response ${code}"; exit 1; fi
+
+      - name: comfy node validate
+        run: |
+          comfy --skip-prompt --no-enable-telemetry env
+          comfy node validate
+
+      - name: comfy node pack and inspect
+        run: |
+          comfy node pack
+          python - <<'PY'
+          import re, sys, zipfile
+          names = zipfile.ZipFile("node.zip").namelist()
+          print(f"{len(names)} files in node.zip")
+          bad = [n for n in names if re.search(r"\.(safetensors|ckpt|pt|pth|gguf|mp4|webm|mkv)$|(^|/)(tests|scripts|\.github)/|docs/results/|runtimes\.json$", n)]
+          need = {"__init__.py", "pyproject.toml", "LICENSE", "NOTICE", "README.md", "monarchrt_comfy/nodes.py", "runtime/monarchrt_job.py", "runtime/monarchrt_kill.py", "runtime/monarchrt_doctor.py", "examples/monarchrt.runtimes.example.json"}
+          missing = need - set(names)
+          if bad or missing:
+              sys.exit(f"package check failed: unexpected={bad} missing={sorted(missing)}")
+          PY
+
+      - name: Wait for CI on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          for i in $(seq 1 90); do
+            res=$(gh run list -R "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SHA" --event push --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"' || true)
+            echo "CI for ${SHA:0:12}: ${res:-not found}"
+            case "$res" in
+              "completed success") exit 0 ;;
+              completed*) echo "::error::CI did not succeed for this commit"; exit 1 ;;
+            esac
+            sleep 30
+          done
+          echo "::error::timed out waiting for CI"; exit 1
+
+  publish-node:
+    name: Publish Custom Node to registry
+    needs: quality-gate
+    if: github.repository == 'hiroki-abe-58/ComfyUI-MonarchRT' && github.ref == 'refs/heads/main' && needs.quality-gate.outputs.token_set == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Publish Custom Node
+        uses: Comfy-Org/publish-node-action@d2366e7abb6ab16f3bb03e3520ae25c8cf749bc9 # main @ 2025-05-10
+        with:
+          personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+          skip_checkout: "true"

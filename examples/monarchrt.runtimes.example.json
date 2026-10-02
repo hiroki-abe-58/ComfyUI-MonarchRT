@@ -1,0 +1,34 @@
+{
+ "schema_version": 1,
+ "runtimes": {
+  "wsl-reference": {
+   "description": "WSL2 Ubuntu, venv with torch 2.8.0+cu128 / triton 3.4.0 / flash-attn 2.8.3 / flashinfer 0.6.3",
+   "kind": "wsl",
+   "distro": "Ubuntu-24.04",
+   "python": "/opt/monarchrt/venv/bin/python",
+   "upstream_dir": "/opt/monarchrt/MonarchRT",
+   "models_dir": "/opt/monarchrt/models",
+   "checkpoint": "/opt/monarchrt/models/checkpoints/self_forcing_dmd.pt",
+   "env": {
+    "CC": "/opt/monarchrt/bin/cc-for-triton",
+    "TRITON_CACHE_DIR": "/opt/monarchrt/cache/triton",
+    "TORCHINDUCTOR_CACHE_DIR": "/opt/monarchrt/cache/inductor",
+    "XDG_CACHE_HOME": "/opt/monarchrt/cache/xdg",
+    "HF_HOME": "/opt/monarchrt/cache/hf",
+    "FLASHINFER_WORKSPACE_BASE": "/opt/monarchrt/cache/flashinfer"
+   },
+   "offload_text_encoder": true,
+   "timeout_minutes": 60
+  },
+  "linux-local": {
+   "description": "ComfyUI itself runs on Linux; same machine, separate venv",
+   "kind": "posix",
+   "python": "/opt/monarchrt/venv/bin/python",
+   "upstream_dir": "/opt/monarchrt/MonarchRT",
+   "models_dir": "/opt/monarchrt/models",
+   "checkpoint": "/opt/monarchrt/models/checkpoints/self_forcing_dmd.pt",
+   "env": {"TRITON_CACHE_DIR": "/opt/monarchrt/cache/triton"},
+   "timeout_minutes": 60
+  }
+ }
+}

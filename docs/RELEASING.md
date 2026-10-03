@@ -57,3 +57,13 @@ comfy-cli telemetry, and passes the token only to that last command.
 To publish a LeapTalk release: make sure its release tag and CI are in place, then run *Actions ->
 Publish ComfyUI-LeapTalk to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the
 version.
+
+## `publish-tbdub.yml` (ComfyUI-TBDub)
+
+[ComfyUI-TBDub](https://github.com/hiroki-abe-58/ComfyUI-TBDub) (node id `tbdub`) is published from here with a
+copy of `publish-leaptalk.yml`: same guards, same pinned `comfy-cli==1.22.0`, token only in the last step; the
+target repository and node id are fixed to TBDub, and the package check requires the TBDub runtime files and
+refuses tests, tools, measurement records and media.
+
+To publish a TBDub release: make sure its release tag and CI are in place, then run *Actions -> Publish
+ComfyUI-TBDub to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the version.

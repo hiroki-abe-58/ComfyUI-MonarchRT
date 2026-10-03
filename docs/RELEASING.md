@@ -44,7 +44,8 @@ Run workflow* on `main` with the tag's commit SHA and the version.
 [ComfyUI-LeapTalk](https://github.com/hiroki-abe-58/ComfyUI-LeapTalk) is published from here the same
 way: dispatch only, from `main`; target repository (`hiroki-abe-58/ComfyUI-LeapTalk`) and node id
 (`leaptalk`) fixed; inputs are a full commit SHA and a version; the first job (no token) checks
-visibility, `main`, tag, release, CI, that the version is new, `pyproject.toml` and the packed archive.
+visibility, `main`, tag, release, CI, that the version is new, `pyproject.toml` and the packed archive
+(which must contain the persistent-worker files of LeapTalk 0.2.0 and later).
 
 Difference from the CausalForcing workflow: the publish job does not use
 `Comfy-Org/publish-node-action`, because that action installs `comfy-cli` without a version and uses a

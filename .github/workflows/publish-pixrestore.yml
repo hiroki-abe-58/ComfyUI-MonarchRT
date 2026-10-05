@@ -1,0 +1,231 @@
+name: Publish ComfyUI-PixRestore to Comfy Registry
+
+# Why this workflow lives in the MonarchRT repository: ComfyUI-PixRestore belongs to the same Comfy Registry
+# publisher (hiroki-abe-58), and the publisher token is stored only here. Instead of copying the token,
+# this workflow - run by hand from this repository's main branch - checks out one already public,
+# released and CI-green commit of hiroki-abe-58/ComfyUI-PixRestore and publishes exactly that commit.
+# (Same structure as publish-looped-dit.yml.)
+#
+# Guards: workflow_dispatch only, this repository and main only; the target repository and node id are
+# fixed below; the only inputs are a full commit SHA and a version, validated before use; the commit must
+# be on the target's main branch, be what tag v<version> points to, have a GitHub release and a green CI
+# run; pyproject metadata and the packed archive are checked in a job that never sees the token (the
+# archive must not contain upstream code, weights or media other than the one sample input); the publish
+# job checks out the same commit again, re-checks the metadata and that the version is new, runs none of
+# the target's scripts, and passes the token only to the final publish command.
+#
+# The publish step runs the same command as Comfy-Org/publish-node-action (comfy node publish), with
+# comfy-cli pinned (1.22.0, as in the other publish workflows here).
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Full 40-character commit SHA of hiroki-abe-58/ComfyUI-PixRestore (on main, tagged v<version>)"
+        required: true
+        type: string
+      version:
+        description: "Version to publish; must equal [project].version at that commit (e.g. 0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: comfy-registry-publish # shared with the other publish workflows: never two registry uploads at the same time
+  cancel-in-progress: false
+
+env:
+  TARGET_REPO: hiroki-abe-58/ComfyUI-PixRestore
+  TARGET_URL: https://github.com/hiroki-abe-58/ComfyUI-PixRestore
+  NODE_ID: pixrestore
+  PUBLISHER_ID: hiroki-abe-58
+  COMFY_CLI_VERSION: "1.22.0"
+
+jobs:
+  verify:
+    name: Verify the target commit (no registry token here)
+    if: github.repository == 'hiroki-abe-58/ComfyUI-MonarchRT' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha: ${{ steps.inputs.outputs.sha }}
+      version: ${{ steps.inputs.outputs.version }}
+    steps:
+      - name: Validate inputs
+        id: inputs
+        env:
+          IN_SHA: ${{ inputs.sha }}
+          IN_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          [[ "$IN_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::sha must be a full 40-character lowercase hex commit id"; exit 1; }
+          [[ "$IN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::version must look like 1.2.3"; exit 1; }
+          echo "sha=$IN_SHA" >> "$GITHUB_OUTPUT"
+          echo "version=$IN_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Commit is public, on main, tagged, released and CI-green
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.inputs.outputs.sha }}
+          VERSION: ${{ steps.inputs.outputs.version }}
+        run: |
+          set -euo pipefail
+          vis=$(gh api "repos/$TARGET_REPO" --jq .visibility)
+          [ "$vis" = "public" ] || { echo "::error::$TARGET_REPO is not public"; exit 1; }
+          status=$(gh api "repos/$TARGET_REPO/compare/$SHA...main" --jq .status)
+          case "$status" in identical|ahead) ;; *) echo "::error::$SHA is not on main of $TARGET_REPO ($status)"; exit 1 ;; esac
+          read -r type obj < <(gh api "repos/$TARGET_REPO/git/ref/tags/v$VERSION" --jq '.object.type + " " + .object.sha')
+          if [ "$type" = "tag" ]; then obj=$(gh api "repos/$TARGET_REPO/git/tags/$obj" --jq .object.sha); fi
+          [ "$obj" = "$SHA" ] || { echo "::error::tag v$VERSION points to $obj, not $SHA"; exit 1; }
+          gh api "repos/$TARGET_REPO/releases/tags/v$VERSION" --jq .tag_name > /dev/null
+          ci=$(gh api "repos/$TARGET_REPO/actions/runs?head_sha=$SHA&event=push&per_page=50" \
+               --jq '[.workflow_runs[] | select(.path == ".github/workflows/ci.yml")] | sort_by(.created_at) | last | "\(.status) \(.conclusion)"')
+          [ "$ci" = "completed success" ] || { echo "::error::CI for $SHA is '$ci'"; exit 1; }
+          echo "target $TARGET_REPO@$SHA = v$VERSION, CI $ci"
+
+      - name: Version is not in the registry yet
+        env:
+          VERSION: ${{ steps.inputs.outputs.version }}
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://api.comfy.org/nodes/${NODE_ID}/versions/${VERSION}")
+          echo "registry lookup ${NODE_ID}@${VERSION}: HTTP ${code}"
+          if [ "$code" = "200" ]; then echo "::error::${NODE_ID} ${VERSION} is already published"; exit 1; fi
+          if [ "$code" != "404" ]; then echo "::error::unexpected registry response ${code}"; exit 1; fi
+
+      - name: Check out the target commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: hiroki-abe-58/ComfyUI-PixRestore
+          ref: ${{ steps.inputs.outputs.sha }}
+          persist-credentials: false
+          path: target
+
+      - name: Metadata matches the approved node
+        working-directory: target
+        env:
+          SHA: ${{ steps.inputs.outputs.sha }}
+          VERSION: ${{ steps.inputs.outputs.version }}
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse HEAD)" = "$SHA" ] || { echo "::error::checked-out commit differs"; exit 1; }
+          python3 - <<'PY'
+          import os, sys, tomllib
+          d = tomllib.load(open("pyproject.toml", "rb"))
+          p, c = d["project"], d["tool"]["comfy"]
+          checks = {
+              "project.name": (p["name"], os.environ["NODE_ID"]),
+              "project.version": (p["version"], os.environ["VERSION"]),
+              "tool.comfy.PublisherId": (c["PublisherId"], os.environ["PUBLISHER_ID"]),
+              "project.urls.Repository": (p["urls"]["Repository"], os.environ["TARGET_URL"]),
+          }
+          bad = {k: v for k, v in checks.items() if v[0] != v[1]}
+          print({k: v[0] for k, v in checks.items()})
+          if bad:
+              sys.exit(f"metadata mismatch: {bad}")
+          if "Permission is hereby granted, free of charge" not in open("LICENSE", encoding="utf-8").read(2000):
+              sys.exit("LICENSE is not the MIT License text")
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install comfy-cli
+        run: python -m pip install "comfy-cli==${COMFY_CLI_VERSION}"
+
+      - name: comfy node validate, pack and inspect (target only)
+        working-directory: target
+        env:
+          DO_NOT_TRACK: "1"
+          COMFY_NO_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          comfy --skip-prompt --no-enable-telemetry env
+          comfy node validate
+          comfy node pack
+          python - <<'PY'
+          import re, sys, zipfile
+          z = zipfile.ZipFile("node.zip")
+          names = z.namelist()
+          print(f"{len(names)} files in node.zip")
+          for n in sorted(names):
+              print("  ", n)
+          sample = "workflows/input/pixrestore_sample_512_jpeg.png"
+          bad = [n for n in names if n != sample and re.search(
+              r"\.(safetensors|ckpt|pt|pth|bin|gguf|png|jpg|jpeg|webp|mp4|webm|mkv|mov|wav|mp3|zip|tar)$|(^|/)(tests|scripts|\.github)/|docs/images/"
+              r"|(^|/)(pixrestore|dinov2)/|monarchrt|causalforcing|leaptalk|tbdub|looped", n)]
+          need = {
+              "__init__.py", "pyproject.toml", "LICENSE", "NOTICE", "README.md", "requirements.txt",
+              "pixrestore_comfy/__init__.py", "pixrestore_comfy/nodes.py", "pixrestore_comfy/runtime.py",
+              "pixrestore_comfy/upstream.py", "pixrestore_comfy/paths.py", "pixrestore_comfy/pins.py",
+              "tools/setup_pixrestore.py",
+              "workflows/api/pixrestore_restore_api.json", "workflows/api/pixrestore_center_crop_then_unload_api.json",
+          }
+          missing = need - set(names)
+          leak = re.compile(rb"(ghp_|github_pat_|hf_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY|[A-Za-z]:[\\/]Users[\\/]|/home/[a-z])")
+          leaks = [n for n in names if leak.search(z.read(n))]
+          if bad or missing or leaks:
+              sys.exit(f"package check failed: unexpected={bad} missing={sorted(missing)} leaks={leaks}")
+          PY
+
+  publish:
+    name: Publish the verified commit
+    needs: verify
+    if: github.repository == 'hiroki-abe-58/ComfyUI-MonarchRT' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the same target commit (repository root = the node)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: hiroki-abe-58/ComfyUI-PixRestore
+          ref: ${{ needs.verify.outputs.sha }}
+          persist-credentials: false
+
+      - name: Confirm commit, metadata and that the version is new (no target scripts are run)
+        env:
+          SHA: ${{ needs.verify.outputs.sha }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse HEAD)" = "$SHA" ] || { echo "::error::checked-out commit differs"; exit 1; }
+          python3 - <<'PY'
+          import os, sys, tomllib
+          d = tomllib.load(open("pyproject.toml", "rb"))
+          p, c = d["project"], d["tool"]["comfy"]
+          got = (p["name"], p["version"], c["PublisherId"], p["urls"]["Repository"])
+          want = (os.environ["NODE_ID"], os.environ["VERSION"], os.environ["PUBLISHER_ID"], os.environ["TARGET_URL"])
+          print(dict(zip(("name", "version", "PublisherId", "Repository"), got)))
+          if got != want:
+              sys.exit(f"metadata mismatch: {got} != {want}")
+          PY
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://api.comfy.org/nodes/${NODE_ID}/versions/${VERSION}")
+          [ "$code" = "404" ] || { echo "::error::${NODE_ID} ${VERSION}: registry answered ${code} (already published or unexpected)"; exit 1; }
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install comfy-cli (pinned; no token in this step)
+        env:
+          DO_NOT_TRACK: "1"
+          COMFY_NO_TELEMETRY: "1"
+        run: |
+          python -m pip install "comfy-cli==${COMFY_CLI_VERSION}"
+          comfy --skip-prompt --no-enable-telemetry env > /dev/null
+
+      - name: Publish (the only step that receives the token)
+        env:
+          REGISTRY_TOKEN: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+          DO_NOT_TRACK: "1"
+          COMFY_NO_TELEMETRY: "1"
+          ENVIRONMENT: "" # comfy-cli: production API (api.comfy.org)
+        run: comfy --skip-prompt --no-enable-telemetry node publish --token "$REGISTRY_TOKEN"

@@ -67,3 +67,14 @@ refuses tests, tools, measurement records and media.
 
 To publish a TBDub release: make sure its release tag and CI are in place, then run *Actions -> Publish
 ComfyUI-TBDub to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the version.
+
+## `publish-pixrestore.yml` (ComfyUI-PixRestore)
+
+[ComfyUI-PixRestore](https://github.com/hiroki-abe-58/ComfyUI-PixRestore) (node id `pixrestore`) is published from
+here with a copy of `publish-looped-dit.yml`: same guards, same pinned `comfy-cli==1.22.0`, token only in the last
+step; the target repository and node id are fixed to PixRestore, and the package check requires the PixRestore
+runtime files and refuses tests, scripts, upstream `pixrestore/` or `dinov2/` code, weights and media (except the one
+sample input under `workflows/input/`).
+
+To publish a PixRestore release: make sure its release tag and CI are in place, then run *Actions -> Publish
+ComfyUI-PixRestore to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the version.

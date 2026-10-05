@@ -78,3 +78,14 @@ sample input under `workflows/input/`).
 
 To publish a PixRestore release: make sure its release tag and CI are in place, then run *Actions -> Publish
 ComfyUI-PixRestore to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the version.
+
+## `publish-miripple.yml` (ComfyUI-MiRipple)
+
+[ComfyUI-MiRipple](https://github.com/hiroki-abe-58/ComfyUI-MiRipple) (node id `mi-ripple`) is published from here
+with a copy of `publish-pixrestore.yml`: same guards, same pinned `comfy-cli==1.22.0`, token only in the last step;
+the target repository and node id are fixed to MiRipple, and the package check requires the node files and the
+vendored MIT Mi-Ripple code with its license copy (each vendored file must match `VENDOR.json`), and refuses tests,
+scripts, docs images, media and weights.
+
+To publish a MiRipple release: make sure its release tag and CI are in place, then run *Actions -> Publish
+ComfyUI-MiRipple to Comfy Registry -> Run workflow* on `main` with the tag's commit SHA and the version.

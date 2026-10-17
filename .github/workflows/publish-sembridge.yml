@@ -157,7 +157,7 @@ jobs:
               "sembridge_comfy/nodes.py", "sembridge_comfy/runtime.py", "sembridge_comfy/scores.py", "sembridge_comfy/paths.py",
               "sembridge_comfy/vendor/LICENSE", "sembridge_comfy/vendor/UPSTREAM.md", "sembridge_comfy/vendor/MANIFEST.sha256",
               "sembridge_comfy/vendor/sembridge/pipeline.py", "sembridge_comfy/vendor/sembridge/models/savae.py",
-              "tools/download_model.py", "tools/queue_client.py",
+              "tools/download_model.py",
               "workflows/api/tts_basic.json", "workflows/api/singing_basic.json", "workflows/api/unified_basic.json",
               "workflows/gui/tts_basic.json", "workflows/gui/singing_basic.json", "workflows/gui/unified_basic.json",
           }
